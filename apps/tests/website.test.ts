@@ -10,13 +10,12 @@ dotenv.config({ path: path.resolve(__dirname, "../api/.env") });
 
 const DEV_BASE_URL = process.env.DEV_BASE_URL?.replace(/"/g, "");
 const PORT = process.env.PORT;
-
 const BASE_URL = `${DEV_BASE_URL}:${PORT}`;
 
 describe("Website gets created",  () => {
     it("website not created if url not present", async () => {
         try {
-            await axios.post(`${BASE_URL}/website`)
+            await axios.post(`${BASE_URL}/website`, {})
             expect(false, "website created when it shouldnt")
         } catch (error) {
             
