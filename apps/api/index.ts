@@ -4,6 +4,7 @@ const app = express();
 // import v1Router from "./routes/v1";
 import { prismaClient } from "store/client";
 import { AuthInput } from "./types";
+import { authMiddleWare } from "./middleware";
 
 app.use(express.json());
 // app.use("/v1", v1Router);
@@ -55,29 +56,42 @@ app.post("/user/signin", async (req, res) => {
     }
 })
 
-// app.post("/website", async (req, res) => {
-//     if(!req.body.url) {
-//         return res.status(411).json({});
-//     }
-//     const website = await prismaClient.website.create({
-//         data: {
-//             url: req.body.url
-//         }
-//     });
-
-//     res.json({ id:website.id });
-// });
-
-app.get("/status/:websiteId", (req, res) => {
-    prismaClient.websiteTick.findMany({
-        where: {
-            website_id: req.params.websiteId
+app.post("/website", authMiddleWare, async (req, res) => {
+    if(!req.body.url) {
+        return res.status(411).json({});
+    }
+    const website = await prismaClient.website.create({
+        data: {
+            url: req.body.url,
+            user_id: req.user_id,
+            createdAt: new Date()
         }
-    }).then(ticks => {
-        res.json(ticks);
-    }).catch(err => {
-        res.status(500).json({ error: "Internal server error" });
     });
+
+    res.json({ id:website.id });
+});
+
+app.get("/status/:websiteId", authMiddleWare, async (req, res) => {
+    const website = await prismaClient.website.findFirst({
+        where: {
+            id: req.params.websiteId
+        },
+        include: {
+            ticks: {
+                orderBy: [{
+                    createdAt: 'desc'
+                }],
+                take: 1
+            }
+        }
+    })
+    if(!website){
+        res.status(409).json({
+            message: "Not Found"
+        })
+        return;
+    }
+    res.json({website})
 });
 
 app.listen(process.env.PORT || 3000);
