@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 export const authMiddleWare = (req:Request, res:Response, next: NextFunction) => {
     const header = req.headers.authorization!;
     try { 
-        let data = jwt.verify(header, process.env.JWT_TOKEN!);
+        let data = jwt.verify(header, process.env.JWT_SECRET!);
         req.user_id = data.sub as string;
         next();
     }catch(e){

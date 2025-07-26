@@ -1,7 +1,6 @@
 import axios from "axios";
-import { password } from "bun";
 
-const USRNAME = Math.random().toString();
+const USRNAME = `test-${Math.random().toString()}`;
 
 export async function createUser(): Promise<{
     id: string,
