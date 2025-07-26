@@ -4,14 +4,14 @@ import * as dotenv from "dotenv";
 import path from "path";
 import { createUser } from "../api/testUtils";
 
-// Load DEV_BASE_URL from apps/tests/.env
-dotenv.config({ path: path.resolve(__dirname, "../tests/.env") });
-// Load PORT from apps/api/.env
-dotenv.config({ path: path.resolve(__dirname, "../api/.env") });
+// // Load DEV_BASE_URL from apps/tests/.env
+// dotenv.config({ path: path.resolve(__dirname, "../.env") });
+// // Load PORT from apps/api/.env
+// dotenv.config({ path: path.resolve(__dirname, "../api/.env") });
 
-const DEV_BASE_URL = process.env.DEV_BASE_URL?.replace(/"/g, "");
-const PORT = process.env.PORT;
-const BASE_URL = `${DEV_BASE_URL}:${PORT}`;
+// const DEV_BASE_URL = process.env.DEV_BASE_URL;
+// const PORT = process.env.PORT;
+const BASE_URL = "http://127.0.0.1:3000";
 
 
 describe("Website gets created",  () => {
@@ -37,7 +37,7 @@ describe("Website gets created",  () => {
         }
     })
 
-    it.todo("website created if url and header are present", async () => {
+    it("website created if url and header are present", async () => {
         const response = await axios.post(`${BASE_URL}/website`, {
             url: "https://excalidrawoo.com"
         }, {

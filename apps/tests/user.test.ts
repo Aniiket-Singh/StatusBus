@@ -8,7 +8,7 @@ describe("Signup endpoints", () => {
     it("unable to sign up with incorrect body", async () => {
         try {
             const res = await axios.post(`${process.env.BACKEND_URL}/user/signup`, {
-                username: USERNAME,
+                email: USERNAME,
                 password: "password"
             });
             expect(false, "control shouldnt reach here");
@@ -35,7 +35,7 @@ describe("signin endpoints", () => {
     it("unable to sign in with incorrect body", async () => {
         try {
             const res = await axios.post(`${process.env.BACKEND_URL}/user/signin`, {
-                username: USERNAME,
+                email: USERNAME,
                 password: "password"
             });
             expect(false, "control shouldnt reach here");

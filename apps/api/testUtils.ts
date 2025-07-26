@@ -6,12 +6,12 @@ export async function createUser(): Promise<{
     id: string,
     jwt: string
 }> {
-    const signupRes = await axios.post(`${process.env.BACKEND_URL}/user/signup`, {
+    const signupRes = await axios.post(`http://127.0.0.1:3000/user/signup`, {
         username: USRNAME,
         password: "123123123"
     })
 
-    const signinRes = await axios.post(`${process.env.BACKEND_URL}/user/signin`, {
+    const signinRes = await axios.post(`http://127.0.0.1:3000/user/signin`, {
         username: USRNAME,
         password: "123123123"
     })
