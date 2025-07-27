@@ -7,26 +7,26 @@ let USERNAME = Math.random().toString();
 describe("Signup endpoints", () => {
     it("unable to sign up with incorrect body", async () => {
         try {
-            const res = await axios.post(`${process.env.BACKEND_URL}/user/signup`, {
+            const res = await axios.post(`http://127.0.0.1:3000/user/signup`, {
                 email: USERNAME,
                 password: "password"
             });
             expect(false, "control shouldnt reach here");
         } catch (error) {
-            console.log(error)
+            // console.log(error)
         }
     })
 
     it("able to sign up with correct body", async () => {
         try {
-            const res = await axios.post(`${process.env.BACKEND_URL}/user/signup`, {
+            const res = await axios.post(`http://127.0.0.1:3000/user/signup`, {
                 username: USERNAME,
                 password: "password"
             });
             expect(res.status).toBe(200);
             expect(res.data.id).toBeDefined();
         } catch (error) {
-            
+            console.log(error)
         }
     })
 })
@@ -34,19 +34,19 @@ describe("Signup endpoints", () => {
 describe("signin endpoints", () => {
     it("unable to sign in with incorrect body", async () => {
         try {
-            const res = await axios.post(`${process.env.BACKEND_URL}/user/signin`, {
+            const res = await axios.post(`http://127.0.0.1:3000/user/signin`, {
                 email: USERNAME,
                 password: "password"
             });
             expect(false, "control shouldnt reach here");
         } catch (error) {
-            console.log(error)
+            // console.log(error)
         }
     })
 
     it("able to sign in with correct body", async () => {
         try {
-            const res = await axios.post(`${process.env.BACKEND_URL}/user/signin`, {
+            const res = await axios.post(`http://127.0.0.1:3000/user/signin`, {
                 username: USERNAME,
                 password: "password"
             });
