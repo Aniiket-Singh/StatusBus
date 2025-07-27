@@ -1,5 +1,6 @@
 import {describe, it, expect} from "bun:test";
 import axios from "axios";
+import { BASE_URL } from "./config";
 
 let USERNAME = Math.random().toString();
 // let PASSWORD = `PSWRD--${Math.random().toString()}`
@@ -7,7 +8,7 @@ let USERNAME = Math.random().toString();
 describe("Signup endpoints", () => {
     it("unable to sign up with incorrect body", async () => {
         try {
-            const res = await axios.post(`http://127.0.0.1:3000/user/signup`, {
+            const res = await axios.post(`${BASE_URL}/user/signup`, {
                 email: USERNAME,
                 password: "password"
             });
@@ -19,7 +20,7 @@ describe("Signup endpoints", () => {
 
     it("able to sign up with correct body", async () => {
         try {
-            const res = await axios.post(`http://127.0.0.1:3000/user/signup`, {
+            const res = await axios.post(`${BASE_URL}/user/signup`, {
                 username: USERNAME,
                 password: "password"
             });
@@ -34,7 +35,7 @@ describe("Signup endpoints", () => {
 describe("signin endpoints", () => {
     it("unable to sign in with incorrect body", async () => {
         try {
-            const res = await axios.post(`http://127.0.0.1:3000/user/signin`, {
+            const res = await axios.post(`${BASE_URL}/user/signin`, {
                 email: USERNAME,
                 password: "password"
             });
@@ -46,7 +47,7 @@ describe("signin endpoints", () => {
 
     it("able to sign in with correct body", async () => {
         try {
-            const res = await axios.post(`http://127.0.0.1:3000/user/signin`, {
+            const res = await axios.post(`${BASE_URL}/user/signin`, {
                 username: USERNAME,
                 password: "password"
             });

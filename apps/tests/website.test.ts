@@ -3,20 +3,10 @@ import axios from "axios";
 import * as dotenv from "dotenv";
 import path from "path";
 import { createUser } from "../api/testUtils";
-
-// // Load DEV_BASE_URL from apps/tests/.env
-// dotenv.config({ path: path.resolve(__dirname, "../.env") });
-// // Load PORT from apps/api/.env
-// dotenv.config({ path: path.resolve(__dirname, "../api/.env") });
-
-// const DEV_BASE_URL = process.env.DEV_BASE_URL;
-// const PORT = process.env.PORT;
-const BASE_URL = "http://127.0.0.1:3000";
-
+import { BASE_URL } from "./config";
 
 describe("Website gets created",  () => {
     let token: string, id: string;
-
     beforeAll(async () => {
         const data = await createUser();
         id = data.id;
@@ -36,7 +26,6 @@ describe("Website gets created",  () => {
             
         }
     })
-
     it("website created if url and header are present", async () => {
         try {
             const response = await axios.post(`${BASE_URL}/website`, {
@@ -51,7 +40,6 @@ describe("Website gets created",  () => {
             
         }
     })
-
     it("website not created if header not present", async () => {
         try {
             const response = await axios.post(`${BASE_URL}/website`, {
@@ -61,6 +49,54 @@ describe("Website gets created",  () => {
         }
         catch (e) {
             
+        }
+    })
+})
+describe("To fetch website", () => {
+    let token1: string, id1: string;
+    let token2: string, id2: string;
+    beforeAll(async () => {
+        const data1 = await createUser();
+        id1 = data1.id;
+        token1 = data1.jwt;
+        const data2 = await createUser();
+        id2 = data2.id;
+        token2 = data2.jwt;
+    })
+    it("able to fetch a website that user creates", async () => {
+        const response = await axios.post(`${BASE_URL}/website`, {
+            url: "https://excalidrawoo.com"
+        }, {
+            headers: {
+                Authorization: token1
+            }
+        })
+        const getWebsiteResponse = await axios.get(`${BASE_URL}/status/${response.data.id}`, {
+            headers: {
+                Authorization: token1
+            }
+        })
+        console.log(getWebsiteResponse.data)
+        expect(getWebsiteResponse.data.website.id).toBe(response.data.id);
+        expect(getWebsiteResponse.data.website.user_id).toBe(response.data.id1);
+    })
+    it("cant access website created by other user", async () => {
+        const response = await axios.post(`${BASE_URL}/website`, {
+            url: "https://excalidrawoo.com"
+            }, {
+            headers: {
+                Authorization: token1
+            }
+        })
+        try {
+            const getWebsiteResponse = await axios.get(`${BASE_URL}/status/${response.data.id}`, {
+                headers: {
+                    Authorization: token2
+                }
+            });
+            expect(false, "should be able to access website of a different user");
+        } catch (error) {
+            console.log("Cant access website of a different user");
         }
     })
 })
