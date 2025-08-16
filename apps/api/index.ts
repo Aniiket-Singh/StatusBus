@@ -74,6 +74,7 @@ app.post("/website", authMiddleWare, async (req, res) => {
 app.get("/status/:websiteId", authMiddleWare, async (req, res) => {
     const website = await prismaClient.website.findFirst({
         where: {
+            user_id: req.user_id,
             id: req.params.websiteId
         },
         include: {
@@ -91,7 +92,11 @@ app.get("/status/:websiteId", authMiddleWare, async (req, res) => {
         })
         return;
     }
-    res.json({website})
+    res.json({
+        url: website.url,
+        id: website.id,
+        user_id:website.user_id
+    })
 });
 
 app.listen(process.env.PORT || 3000);

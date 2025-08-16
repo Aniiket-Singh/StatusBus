@@ -76,9 +76,10 @@ describe("To fetch website", () => {
                 Authorization: token1
             }
         })
+        console.log(response.data)
         console.log(getWebsiteResponse.data)
-        expect(getWebsiteResponse.data.website.id).toBe(response.data.id);
-        expect(getWebsiteResponse.data.website.user_id).toBe(response.data.id1);
+        expect(getWebsiteResponse.data.id).toBe(response.data.id);
+        expect(getWebsiteResponse.data.user_id).toBe(id1);
     })
     it("cant access website created by other user", async () => {
         const response = await axios.post(`${BASE_URL}/website`, {

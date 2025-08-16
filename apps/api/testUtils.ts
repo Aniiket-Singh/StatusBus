@@ -1,17 +1,17 @@
 import axios from "axios";
-
-const USRNAME = `test-${Math.random().toString()}`;
+import {BASE_URL} from "../tests/config";
 
 export async function createUser(): Promise<{
     id: string,
     jwt: string
 }> {
-    const signupRes = await axios.post(`http://127.0.0.1:3000/user/signup`, {
+    const USRNAME = `test-${Math.random().toString()}`;
+    const signupRes = await axios.post(`${BASE_URL}/user/signup`, {
         username: USRNAME,
         password: "123123123"
     })
 
-    const signinRes = await axios.post(`http://127.0.0.1:3000/user/signin`, {
+    const signinRes = await axios.post(`${BASE_URL}/user/signin`, {
         username: USRNAME,
         password: "123123123"
     })
