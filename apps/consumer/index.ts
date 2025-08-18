@@ -1,4 +1,6 @@
 import {createClient} from "redis"
+import {prismaClient} from "store/client"
+import axios from "axios"
 
 async function main (){
     const client = await createClient({
@@ -15,6 +17,24 @@ async function main (){
     })
 
     console.log(response)
+    //@ts-ignore
+    let websitesToTrack = response[0].messages;
+    //@ts-ignore
+    websitesToTrack.forEach(website => {
+        let startTime = Date.now()
+        axios.get(website.url)
+        .then(() => {
+            prismaClient.websiteTick.create({
+                status: "Up",
+                rt_ms: Date.now() - startTime,
+                region_id: "india",
+                website_id: website.id
+            })
+        })
+        .catch( () => {
+
+        })
+    })
 }
 
 main()
