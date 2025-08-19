@@ -1,5 +1,5 @@
 import {createClient} from "redis"
-import type { StreamEntry, MessageType} from "shared-types"
+import type { StreamEntry, MessageType, RawRedisMessage } from "shared-types"
 
 const client = await createClient()
 .on("error", (err) => {
@@ -19,25 +19,63 @@ export async function xAdd({url, id}: websiteArgs){
 }
 
 export async function xAddBulk(websites : websiteArgs[]){
-    websites.map(async (website) => {
+    for(const website of websites){
         await xAdd({
             url: website.url,
             id: website.id
         })
-    })
+    }
 }
 
-export async function xReadGroup(consumerGroup: string, consumerId: string){
+export async function xReadGroup(
+                        consumerGroup: string, consumerId: string
+                        ): Promise<StreamEntry<MessageType>[]>{
     const response = await client.xReadGroup(consumerGroup, consumerId, {
         key: STREAM_NAME,
         id: '>'
     }, {
         'COUNT': 5
     } );
-    //@ts-ignore
-    const messages: StreamEntry<MessageType>[] = response[0].messages
-    console.log(messages)
-    return messages
+
+
+    // 1. Guard against null or non-array responses.
+    //    This check ensures 'response' is an array and not empty.
+    if (!response || !Array.isArray(response) || response.length === 0) {
+        return [];
+    }
+
+    // After this check, TypeScript knows 'response' is an array.
+    // The error on the next line is now resolved.
+    const firstStream = response[0];
+
+    // 2. Guard the structure of the stream object itself.
+    if (
+        !firstStream ||
+        typeof firstStream !== 'object' ||
+        !('messages' in firstStream) ||
+        !Array.isArray(firstStream.messages)
+    ) {
+        return [];
+    }
+
+    const rawMessages = firstStream.messages as RawRedisMessage[];
+    const typedMessages: StreamEntry<MessageType>[] = [];
+    for (const msg of rawMessages) {
+        const url = msg.message?.url;
+        const id = msg.message?.id;
+        if (typeof url === 'string' && typeof id === 'string') {
+            typedMessages.push({
+                id: msg.id,
+                message: { url, id }
+            });
+        }
+    }
+
+    return typedMessages;
+
+    // const messages: StreamEntry<MessageType>[] = firstStream.messages
+    // console.log(messages)
+    // return messages
 }
 
 export async function xAck(consumerGroup: string, eventId:string){
