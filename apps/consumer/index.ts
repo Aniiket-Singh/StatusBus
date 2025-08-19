@@ -1,40 +1,42 @@
-import {createClient} from "redis"
-import {prismaClient} from "store/client"
+import { xAck, xReadGroup,  } from "redisq/client"
+import { prismaClient } from "store/client";
 import axios from "axios"
+import type { MessageType } from "shared-types"
 
-async function main (){
-    const client = await createClient({
-        url: "redis://localhost:6379"
-    })
-    .on("error", (err) => console.log("Redis Client Error", err))
-    .connect();
+const REGION_ID = process.env.REGION_ID!;
+const CONSUMER_ID = process.env.CONSUMER_ID!;
 
-    const response = await client.xReadGroup('india', 'india-1', {
-        key: 'statusbus:web',
-        id: '>'
-    }, {
-        COUNT: 2
-    })
+if(!REGION_ID){
+    throw new Error("Region not provided");
+}
 
-    console.log(response)
-    //@ts-ignore
-    let websitesToTrack = response[0].messages;
-    //@ts-ignore
-    websitesToTrack.forEach(website => {
+if(!CONSUMER_ID){
+    throw new Error("Region not provided");
+}
+
+async function main(){
+
+    const response = await xReadGroup(REGION_ID, CONSUMER_ID)
+    response.map(({id, message} : {id: string, message: MessageType}) => {
+        const url = message.url
+        const website_id = message.id
         let startTime = Date.now()
-        axios.get(website.url)
-        .then(() => {
+        axios.get(url)  
+        .then( ()=> {
             prismaClient.websiteTick.create({
-                status: "Up",
-                rt_ms: Date.now() - startTime,
-                region_id: "india",
-                website_id: website.id
+                data: {
+                    rt_ms: Number(Date.now() - startTime),
+                    status: "Up",
+                    region_id: REGION_ID,
+                    website_id, 
+                }
             })
-        })
-        .catch( () => {
-
+        }).catch( () => {
+            console.log("axios call failed")
         })
     })
+    
+    xAck(REGION_ID, "a");
 }
 
 main()

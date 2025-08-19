@@ -7,6 +7,10 @@
   "peerDependencies": {
     "typescript": "^5"
   },
+  "dependencies": {
+    "redisq": "*",
+    "store": "*"
+  },
   "private": true,
   "type": "module"
 }

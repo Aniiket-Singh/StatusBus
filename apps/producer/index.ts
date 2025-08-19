@@ -8,10 +8,15 @@ async function main (){
             id: true
         }
     });
+
+    console.log(websites.length)
     await xAddBulk(websites.map(website => ({
         url: website.url,
         id: website.id
     })))
+    .then( ()=> {
+        console.log("xAddBulk done")
+    })
 }
 
 main()

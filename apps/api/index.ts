@@ -99,4 +99,11 @@ app.get("/status/:websiteId", authMiddleWare, async (req, res) => {
     })
 });
 
-app.listen(process.env.PORT || 3000);
+const PORT = Number(process.env.PORT) || 3001;
+const HOST = '127.0.0.1';
+
+// app.listen(process.env.PORT || 3001);
+
+app.listen(PORT, HOST, () => {
+    console.log(`Server listening on http://${HOST}:${PORT}`);
+});
