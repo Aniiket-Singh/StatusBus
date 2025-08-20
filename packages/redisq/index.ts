@@ -70,15 +70,16 @@ export async function xReadGroup(
             });
         }
     }
-
     return typedMessages;
-
-    // const messages: StreamEntry<MessageType>[] = firstStream.messages
-    // console.log(messages)
-    // return messages
 }
 
 export async function xAck(consumerGroup: string, eventId:string){
     const response = await client.xAck(STREAM_NAME, consumerGroup, eventId)
     console.log(response)
+}
+
+export async function xAckBulk(consumerGroup: string, eventIdArray: string[]){
+    eventIdArray.map( async (eventId) => {
+        await xAck(consumerGroup, eventId)
+    })
 }

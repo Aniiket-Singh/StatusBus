@@ -1,7 +1,8 @@
-import { xAck, xReadGroup,  } from "redisq/client"
+import { xAck, xAckBulk, xReadGroup,  } from "redisq/client"
 import { prismaClient } from "store/client";
 import axios from "axios"
 import type { MessageType } from "shared-types"
+import { resolve } from "bun";
 
 const REGION_ID = process.env.REGION_ID!;
 const CONSUMER_ID = process.env.CONSUMER_ID!;
@@ -15,13 +16,18 @@ if(!CONSUMER_ID){
 }
 
 async function main(){
-
     const responses = await xReadGroup(REGION_ID, CONSUMER_ID)
-    for(const {id, message} of responses) {
-        const url = message.url
-        const website_id = message.id
+    let promisesArray = responses.map( async ({message}) => fetchWebsite(message.url, message.id)) 
+    await Promise.all(promisesArray)
+    xAckBulk(REGION_ID, responses.map(({id}) => id))
+    }
+
+async function fetchWebsite(messageUrl: string, messageId: string){
+    return new Promise<void>((resolve, reject) => {
+        const url = messageUrl
+        const website_id = messageId
         let startTime = Date.now()
-        await axios.get(url)  
+        axios.get(url)  
         .then( async ()=> {
             await prismaClient.websiteTick.create({
                 data: {
@@ -31,6 +37,9 @@ async function main(){
                     website_id
                 }
             })
+            // console.log('Event ID (success) : ', id)
+            // xAck(REGION_ID, id);
+            // resolve()
         }).catch( async () => {
             console.log("axios call failed")
             await prismaClient.websiteTick.create({
@@ -41,15 +50,10 @@ async function main(){
                     website_id
                 }
             })
+            // console.log('Event ID (fail) : ', id)
+            // xAck(REGION_ID, id);
+            // resolve();
         })
-        console.log('Event ID : ', id)
-        xAck(REGION_ID, id);
-    }
-    // response.map(({id, message} : {id: string, message: MessageType}) => {
-        
-    // })
-    
-
+    })
 }
-
 main()
