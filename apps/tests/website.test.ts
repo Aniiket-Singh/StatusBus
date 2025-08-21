@@ -29,7 +29,7 @@ describe("Website gets created",  () => {
     it("website created if url and header are present", async () => {
         try {
             const response = await axios.post(`${BASE_URL}/website`, {
-                url: "https://excalidrawoo.com"
+                url: "https://google.com"
             }, {
                 headers: {
                     Authorization: token
@@ -43,7 +43,7 @@ describe("Website gets created",  () => {
     it("website not created if header not present", async () => {
         try {
             const response = await axios.post(`${BASE_URL}/website`, {
-                url: "https://excalidraw.com"
+                url: "https://facebook.com"
             })
             expect(false, "website shouldnt be created without Auth header");
         }
@@ -65,7 +65,7 @@ describe("To fetch website", () => {
     })
     it("able to fetch a website that user creates", async () => {
         const response = await axios.post(`${BASE_URL}/website`, {
-            url: "https://excalidrawoo.com"
+            url: "https://awoo.com"
         }, {
             headers: {
                 Authorization: token1
@@ -83,7 +83,7 @@ describe("To fetch website", () => {
     })
     it("cant access website created by other user", async () => {
         const response = await axios.post(`${BASE_URL}/website`, {
-            url: "https://excalidrawoo.com"
+            url: "https://asdafasfsa.com"
             }, {
             headers: {
                 Authorization: token1

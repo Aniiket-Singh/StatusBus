@@ -20,18 +20,27 @@ async function main(){
     await Promise.all(promisesArray)
     }
 
-async function fetchWebsite(id: string, messageUrl: string, messageId: string){
-    const url = messageUrl
-    const website_id = messageId
+async function fetchWebsite(id: string, messageUrl: string, websiteId: string){
+    const website = await prismaClient.website.findUnique({
+        where: { id: websiteId },
+    });
+
+    // 2. If it doesn't exist, log it, acknowledge the message, and stop processing
+    if (!website) {
+        console.warn(`Website with ID ${websiteId} not found in database. Skipping tick creation.`);
+        await xAck(REGION_ID, id);
+        return;
+    }
+    
     let startTime = Date.now()
-    await axios.get(url)  
+    await axios.get(messageUrl)  
     .then( async ()=> {
         await prismaClient.websiteTick.create({
             data: {
                 rt_ms: Number(Date.now() - startTime),
                 status: "Up",
                 region_id: REGION_ID,
-                website_id
+                website_id: websiteId
             }
         })
         console.log('Event ID (success) : ', id)
@@ -41,7 +50,7 @@ async function fetchWebsite(id: string, messageUrl: string, messageId: string){
                 rt_ms: Number(Date.now() - startTime),
                 status: "Down",
                 region_id: REGION_ID,
-                website_id
+                website_id: websiteId
             }
         })
         console.log('Event ID (fail) : ', id)
