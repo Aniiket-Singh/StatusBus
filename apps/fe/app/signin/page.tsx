@@ -1,31 +1,35 @@
 "use client"
 import React, { useState } from 'react';
 import { Monitor, Eye, EyeOff, ArrowLeft } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import axios from "axios";
+import { BACKEND_URL } from '@/lib/utils';
 
-interface SignInProps {
-    onBack: () => void;
-    onSwitchToSignUp: () => void;
-}
-
-export const SignIn: React.FC<SignInProps> = ({ onBack, onSwitchToSignUp }) => {
+const SignIn: React.FC = () => {
+    const router = useRouter();
     const [showPassword, setShowPassword] = useState(false);
     const [formData, setFormData] = useState({
-        email: '',
-        password: '',
-        rememberMe: false
+        username: '',
+        password: ''
     });
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Handle sign in logic here
+        let response = await axios.post(`${BACKEND_URL}/user/signin`, {
+            username: formData.username,
+            password: formData.password
+        })
+
+        localStorage.setItem("token", response.data.jwt)
         console.log('Sign in:', formData);
+        router.push('/dashboard');
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value, type, checked } = e.target;
         setFormData(prev => ({
             ...prev,
-            [name]: type === 'checkbox' ? checked : value
+            [name]: value
         }));
     };
 
@@ -34,7 +38,7 @@ export const SignIn: React.FC<SignInProps> = ({ onBack, onSwitchToSignUp }) => {
             <div className="max-w-md w-full space-y-8">
                 <div>
                     <button
-                        onClick={onBack}
+                        onClick={() => {router.back()}}
                         className="flex items-center text-slate-400 hover:text-white transition-colors mb-8"
                     >
                         <ArrowLeft className="h-4 w-4 mr-2" />
@@ -57,19 +61,18 @@ export const SignIn: React.FC<SignInProps> = ({ onBack, onSwitchToSignUp }) => {
                 <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
                     <div className="space-y-4">
                         <div>
-                            <label htmlFor="email" className="block text-sm font-medium text-slate-300 mb-2">
-                                Email address
+                            <label htmlFor="username" className="block text-sm font-medium text-slate-300 mb-2">
+                                Username
                             </label>
                             <input
-                                id="email"
-                                name="email"
-                                type="email"
-                                autoComplete="email"
+                                id="username"
+                                name="username"
+                                type="text"
                                 required
-                                value={formData.email}
+                                value={formData.username}
                                 onChange={handleChange}
                                 className="appearance-none relative block w-full px-3 py-3 border border-slate-600 placeholder-slate-400 text-white bg-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                                placeholder="Enter your email"
+                                placeholder="Enter your username"
                             />
                         </div>
 
@@ -110,7 +113,6 @@ export const SignIn: React.FC<SignInProps> = ({ onBack, onSwitchToSignUp }) => {
                                 id="remember-me"
                                 name="rememberMe"
                                 type="checkbox"
-                                checked={formData.rememberMe}
                                 onChange={handleChange}
                                 className="h-4 w-4 text-blue-600 bg-slate-800 border-slate-600 rounded focus:ring-blue-500 focus:ring-2"
                             />
@@ -139,7 +141,7 @@ export const SignIn: React.FC<SignInProps> = ({ onBack, onSwitchToSignUp }) => {
                         <span className="text-slate-400">Don't have an account? </span>
                         <button
                             type="button"
-                            onClick={onSwitchToSignUp}
+                            onClick={() => {router.push('/signup')}}
                             className="text-blue-400 hover:text-blue-300 transition-colors font-medium"
                         >
                             Sign up
@@ -150,3 +152,5 @@ export const SignIn: React.FC<SignInProps> = ({ onBack, onSwitchToSignUp }) => {
         </div>
     );
 };
+
+export default SignIn;

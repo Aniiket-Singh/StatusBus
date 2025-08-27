@@ -1,56 +1,61 @@
 "use client"
 import React, { useState } from 'react';
 import { Monitor, Eye, EyeOff, ArrowLeft, Check } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { BACKEND_URL } from '@/lib/utils';
+import axios from 'axios';
 
-interface SignUpProps {
-    onBack: () => void;
-    onSwitchToSignIn: () => void;
-}
 
-export const SignUp: React.FC<SignUpProps> = ({ onBack, onSwitchToSignIn }) => {
+const SignUp: React.FC = () => {
+    const router = useRouter();
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [formData, setFormData] = useState({
-        firstName: '',
-        lastName: '',
-        email: '',
+        username: '',
         password: '',
-        confirmPassword: '',
-        agreeToTerms: false
+        confirmPassword: ''
     });
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Handle sign up logic here
-        console.log('Sign up:', formData);
+        let response = await axios.post(`${BACKEND_URL}/user/signup`,{
+            username: formData.username,
+            password: formData.password
+        })
+
+        if(response.status == 200) {
+            console.log('Sign up successful:', formData);
+            router.push('/signin');
+        } else {
+            console.error('Sign up failed:', response.data);
+        }
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value, type, checked } = e.target;
+        const { name, value } = e.target;
         setFormData(prev => ({
             ...prev,
-            [name]: type === 'checkbox' ? checked : value
+            [name]: value
         }));
     };
 
     const passwordsMatch = formData.password === formData.confirmPassword;
-    const isPasswordValid = formData.password.length >= 8;
 
     return (
         <div className="min-h-screen bg-slate-900 flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12">
             <div className="max-w-md w-full space-y-8">
                 <div>
                     <button
-                        onClick={onBack}
+                        onClick={() => {router.back()}}
                         className="flex items-center text-slate-400 hover:text-white transition-colors mb-8"
                     >
                         <ArrowLeft className="h-4 w-4 mr-2" />
-                        Back to home
+                        Back
                     </button>
 
                     <div className="flex items-center justify-center mb-8">
                         <Monitor className="h-12 w-12 text-blue-500" />
-                        <span className="ml-3 text-2xl font-bold text-white">StatusWatch</span>
+                        <span className="ml-3 text-2xl font-bold text-white">StatusBus</span>
                     </div>
 
                     <h2 className="text-center text-3xl font-bold text-white">
@@ -63,56 +68,18 @@ export const SignUp: React.FC<SignUpProps> = ({ onBack, onSwitchToSignIn }) => {
 
                 <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
                     <div className="space-y-4">
-                        <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <label htmlFor="firstName" className="block text-sm font-medium text-slate-300 mb-2">
-                                    First name
-                                </label>
-                                <input
-                                    id="firstName"
-                                    name="firstName"
-                                    type="text"
-                                    autoComplete="given-name"
-                                    required
-                                    value={formData.firstName}
-                                    onChange={handleChange}
-                                    className="appearance-none relative block w-full px-3 py-3 border border-slate-600 placeholder-slate-400 text-white bg-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                                    placeholder="John"
-                                />
-                            </div>
-
-                            <div>
-                                <label htmlFor="lastName" className="block text-sm font-medium text-slate-300 mb-2">
-                                    Last name
-                                </label>
-                                <input
-                                    id="lastName"
-                                    name="lastName"
-                                    type="text"
-                                    autoComplete="family-name"
-                                    required
-                                    value={formData.lastName}
-                                    onChange={handleChange}
-                                    className="appearance-none relative block w-full px-3 py-3 border border-slate-600 placeholder-slate-400 text-white bg-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                                    placeholder="Doe"
-                                />
-                            </div>
-                        </div>
-
                         <div>
-                            <label htmlFor="email" className="block text-sm font-medium text-slate-300 mb-2">
-                                Email address
+                            <label htmlFor="username" className="block text-sm font-medium text-slate-300 mb-2">
+                                Username
                             </label>
                             <input
-                                id="email"
-                                name="email"
+                                id="username"
+                                name="username"
                                 type="email"
-                                autoComplete="email"
                                 required
-                                value={formData.email}
+                                value={formData.username}
                                 onChange={handleChange}
                                 className="appearance-none relative block w-full px-3 py-3 border border-slate-600 placeholder-slate-400 text-white bg-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                                placeholder="john@example.com"
                             />
                         </div>
 
@@ -144,18 +111,6 @@ export const SignUp: React.FC<SignUpProps> = ({ onBack, onSwitchToSignIn }) => {
                                     )}
                                 </button>
                             </div>
-                            {formData.password && (
-                                <div className="mt-2 flex items-center text-sm">
-                                    {isPasswordValid ? (
-                                        <Check className="h-4 w-4 text-green-400 mr-2" />
-                                    ) : (
-                                        <div className="h-4 w-4 mr-2" />
-                                    )}
-                                    <span className={isPasswordValid ? 'text-green-400' : 'text-slate-400'}>
-                                        At least 8 characters
-                                    </span>
-                                </div>
-                            )}
                         </div>
 
                         <div>
@@ -201,32 +156,10 @@ export const SignUp: React.FC<SignUpProps> = ({ onBack, onSwitchToSignIn }) => {
                         </div>
                     </div>
 
-                    <div className="flex items-start">
-                        <input
-                            id="agreeToTerms"
-                            name="agreeToTerms"
-                            type="checkbox"
-                            required
-                            checked={formData.agreeToTerms}
-                            onChange={handleChange}
-                            className="h-4 w-4 text-blue-600 bg-slate-800 border-slate-600 rounded focus:ring-blue-500 focus:ring-2 mt-1"
-                        />
-                        <label htmlFor="agreeToTerms" className="ml-2 block text-sm text-slate-300">
-                            I agree to the{' '}
-                            <a href="#" className="text-blue-400 hover:text-blue-300 transition-colors">
-                                Terms of Service
-                            </a>{' '}
-                            and{' '}
-                            <a href="#" className="text-blue-400 hover:text-blue-300 transition-colors">
-                                Privacy Policy
-                            </a>
-                        </label>
-                    </div>
-
                     <div>
                         <button
                             type="submit"
-                            disabled={!formData.agreeToTerms || !isPasswordValid || !passwordsMatch}
+                            disabled={ !passwordsMatch}
                             className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                         >
                             Create account
@@ -237,7 +170,7 @@ export const SignUp: React.FC<SignUpProps> = ({ onBack, onSwitchToSignIn }) => {
                         <span className="text-slate-400">Already have an account? </span>
                         <button
                             type="button"
-                            onClick={onSwitchToSignIn}
+                            onClick={() => {router.push('/signin')}}
                             className="text-blue-400 hover:text-blue-300 transition-colors font-medium"
                         >
                             Sign in
@@ -248,3 +181,5 @@ export const SignUp: React.FC<SignUpProps> = ({ onBack, onSwitchToSignIn }) => {
         </div>
     );
 };
+
+export default SignUp;
