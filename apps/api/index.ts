@@ -82,7 +82,7 @@ app.get("/status/:websiteId", authMiddleWare, async (req, res) => {
                 orderBy: [{
                     createdAt: 'desc'
                 }],
-                take: 1
+                take: 10
             }
         }
     })
@@ -98,6 +98,18 @@ app.get("/status/:websiteId", authMiddleWare, async (req, res) => {
         user_id:website.user_id
     })
 });
+
+app.get("/websites", authMiddleWare, async (req, res) =>{
+    const websites = await prismaClient.website.findMany({
+        where:{
+            user_id: req.user_id
+        }
+    })
+
+    res.json({
+        websites
+    })
+})
 
 const PORT = Number(process.env.PORT) || 3001;
 const HOST = '127.0.0.1';

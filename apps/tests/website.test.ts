@@ -101,3 +101,39 @@ describe("To fetch website", () => {
         }
     })
 })
+
+describe("should be able to get all its websites", () => {
+    let token: string, id: string;
+    beforeAll(async () => {
+        const data = await createUser();
+        id = data.id;
+        token = data.jwt;
+    })
+    it("is able to fetch all its websites", async () => {
+        await axios.post(`${BASE_URL}/website`, {
+            url: "https://google.com"
+            }, {
+            headers: {
+                Authorization: token
+            }
+        })
+
+        await axios.post(`${BASE_URL}/website`, {
+            url: "https://facebook.com"
+            }, {
+            headers: {
+                Authorization: token
+            }
+        })
+        try {
+            const getWebsiteResponse = await axios.get(`${BASE_URL}/websites`, {
+                headers: {
+                    Authorization: token
+                }
+            });
+            expect(getWebsiteResponse.data.websites.length == 2, "Incorrect no. of websites created");
+        } catch (error) {
+            console.log("Cant access website of a different user");
+        }
+    })
+})

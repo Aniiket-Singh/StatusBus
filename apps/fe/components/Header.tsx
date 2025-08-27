@@ -2,9 +2,11 @@
 
 import React, { useState } from 'react';
 import { Monitor, Menu, X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export const Header: React.FC = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const router = useRouter();
 
     return (
         <header className="bg-slate-900/95 backdrop-blur-sm border-b border-slate-800 sticky top-0 z-50">
@@ -23,8 +25,10 @@ export const Header: React.FC = () => {
                     </nav>
 
                     <div className="hidden md:flex items-center space-x-4">
-                        <button className="text-slate-300 hover:text-white transition-colors">Sign In</button>
-                        <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
+                        <button onClick={() => {router.push('/signin')}} className="text-slate-300 hover:text-white transition-colors">
+                            Sign In
+                        </button>
+                        <button onClick={() => {router.push('/signup')}} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
                             Start Free Trial
                         </button>
                     </div>
