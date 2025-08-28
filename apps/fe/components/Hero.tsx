@@ -33,12 +33,6 @@ export const Hero: React.FC = () => {
                             Start Free Trial
                             <ArrowRight className="ml-2 h-5 w-5" />
                         </button>
-
-                        <div className="flex items-center justify-center lg:justify-start mt-8 text-sm text-slate-400">
-                            <span>✓ No credit card required</span>
-                            <span className="mx-4">✓ 14-day free trial</span>
-                            <span>✓ Cancel anytime</span>
-                        </div>
                     </div>
 
                     <div className="relative">
