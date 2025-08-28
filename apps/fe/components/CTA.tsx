@@ -11,7 +11,7 @@ export const CTA: React.FC = () => {
                         Start monitoring your websites today
                     </h2>
                     <p className="text-xl text-slate-300 mb-8 max-w-2xl mx-auto">
-                        Join thousands of developers who trust StatusWatch to keep their websites
+                        Join thousands of developers who trust StatusBus to keep their websites
                         running smoothly. Get started with our free plan in less than 2 minutes.
                     </p>
                 </div>

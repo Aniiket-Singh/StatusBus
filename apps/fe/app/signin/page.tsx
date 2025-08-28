@@ -47,7 +47,7 @@ const SignIn: React.FC = () => {
 
                     <div className="flex items-center justify-center mb-8">
                         <Monitor className="h-12 w-12 text-blue-500" />
-                        <span className="ml-3 text-2xl font-bold text-white">StatusWatch</span>
+                        <span className="ml-3 text-2xl font-bold text-white">StatusBus</span>
                     </div>
 
                     <h2 className="text-center text-3xl font-bold text-white">

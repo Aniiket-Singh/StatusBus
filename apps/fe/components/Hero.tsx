@@ -49,7 +49,7 @@ export const Hero: React.FC = () => {
                                     <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
                                     <div className="w-3 h-3 bg-green-500 rounded-full"></div>
                                 </div>
-                                <span className="ml-4 text-slate-400 text-sm">StatusWatch Dashboard</span>
+                                <span className="ml-4 text-slate-400 text-sm">StatusBus Dashboard</span>
                             </div>
 
                             <div className="space-y-3">
@@ -58,7 +58,7 @@ export const Hero: React.FC = () => {
                                         <div className="w-3 h-3 bg-green-400 rounded-full mr-3"></div>
                                         <span className="text-white">example.com</span>
                                     </div>
-                                    <span className="text-green-400 text-sm">99.9%</span>
+                                    <span className="text-green-400 text-sm">Up</span>
                                 </div>
 
                                 <div className="flex items-center justify-between p-3 bg-slate-700 rounded-lg">
@@ -66,15 +66,15 @@ export const Hero: React.FC = () => {
                                         <div className="w-3 h-3 bg-green-400 rounded-full mr-3"></div>
                                         <span className="text-white">api.example.com</span>
                                     </div>
-                                    <span className="text-green-400 text-sm">100%</span>
+                                    <span className="text-green-400 text-sm">Up</span>
                                 </div>
 
                                 <div className="flex items-center justify-between p-3 bg-slate-700 rounded-lg">
                                     <div className="flex items-center">
-                                        <div className="w-3 h-3 bg-yellow-400 rounded-full mr-3 animate-pulse"></div>
+                                        <div className="w-3 h-3 bg-green-400 rounded-full mr-3"></div>
                                         <span className="text-white">blog.example.com</span>
                                     </div>
-                                    <span className="text-yellow-400 text-sm">95.2%</span>
+                                    <span className="text-green-400 text-sm">Up</span>
                                 </div>
 
                                 <div className="flex items-center justify-between p-3 bg-slate-700 rounded-lg">

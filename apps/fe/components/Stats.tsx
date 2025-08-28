@@ -1,10 +1,10 @@
 import React from 'react';
 
 const stats = [
-    { number: "99.9%", label: "Average Uptime" },
+    { number: "24*7", label: "Uptime" },
     { number: "< 30s", label: "Alert Response Time" },
-    { number: "15+", label: "Global Locations" },
-    { number: "10K+", label: "Websites Monitored" }
+    { number: "2", label: "Global Locations" },
+    { number: "10+", label: "Websites Monitored" }
 ];
 
 export const Stats: React.FC = () => {

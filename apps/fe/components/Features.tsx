@@ -14,7 +14,7 @@ const features = [
     {
         icon: Globe,
         title: "Global Monitoring",
-        description: "Monitor from 15+ locations worldwide to ensure your users get the best experience regardless of their location."
+        description: "Monitor from 2 locations - India and US, to ensure your users get the best experience regardless of their location."
     },
     {
         icon: Bell,
@@ -24,12 +24,7 @@ const features = [
     {
         icon: BarChart3,
         title: "Performance Analytics",
-        description: "Track response times, uptime statistics, and performance trends with detailed charts and reports."
-    },
-    {
-        icon: Shield,
-        title: "SSL & Security Monitoring",
-        description: "Monitor SSL certificate expiration, security headers, and detect potential security vulnerabilities."
+        description: "Track response times, uptime statistics, and performance trends."
     },
     {
         icon: Clock,
@@ -40,16 +35,6 @@ const features = [
         icon: Zap,
         title: "Fast Response Time",
         description: "Sub-30 second monitoring intervals ensure you're notified of issues before your users notice."
-    },
-    {
-        icon: Users,
-        title: "Team Collaboration",
-        description: "Share dashboards with your team, assign incidents, and collaborate on issue resolution."
-    },
-    {
-        icon: Smartphone,
-        title: "Mobile App",
-        description: "Monitor your websites on the go with our native iOS and Android mobile applications."
     }
 ];
 
