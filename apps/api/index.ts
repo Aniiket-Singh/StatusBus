@@ -1,6 +1,5 @@
 import express from "express";
 import jwt from "jsonwebtoken";
-// import v1Router from "./routes/v1";
 import { prismaClient } from "store/client";
 import { AuthInput } from "./types";
 import { authMiddleWare } from "./middleware";
@@ -10,7 +9,6 @@ const app = express();
 app.use(express.json());
 app.use(cors())
 
-// app.use("/v1", v1Router);
 
 app.post("/user/signup", async (req, res) => {
     const user_data = AuthInput.safeParse(req.body);
