@@ -1,12 +1,15 @@
 import express from "express";
 import jwt from "jsonwebtoken";
-const app = express();
 // import v1Router from "./routes/v1";
 import { prismaClient } from "store/client";
 import { AuthInput } from "./types";
 import { authMiddleWare } from "./middleware";
+import cors from "cors";
 
+const app = express();
 app.use(express.json());
+app.use(cors())
+
 // app.use("/v1", v1Router);
 
 app.post("/user/signup", async (req, res) => {
@@ -111,10 +114,8 @@ app.get("/websites", authMiddleWare, async (req, res) =>{
     })
 })
 
-const PORT = Number(process.env.PORT) || 3001;
+const PORT = Number(process.env.PORT) || 3000;
 const HOST = '127.0.0.1';
-
-// app.listen(process.env.PORT || 3001);
 
 app.listen(PORT, HOST, () => {
     console.log(`Server listening on http://${HOST}:${PORT}`);

@@ -75,7 +75,7 @@ const SignUp: React.FC = () => {
                             <input
                                 id="username"
                                 name="username"
-                                type="email"
+                                type="text"
                                 required
                                 value={formData.username}
                                 onChange={handleChange}
