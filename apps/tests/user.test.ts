@@ -14,6 +14,11 @@ describe("Signup endpoints", () => {
             });
             expect(false, "control shouldnt reach here");
         } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                expect(error.response.status).toBe(403);
+            } else {
+                throw error;
+            }
             // console.log(error)
         }
     })
@@ -27,7 +32,7 @@ describe("Signup endpoints", () => {
             expect(res.status).toBe(200);
             expect(res.data.id).toBeDefined();
         } catch (error) {
-            console.log(error)
+            // console.log(error)
         }
     })
 })
@@ -52,9 +57,10 @@ describe("signin endpoints", () => {
                 password: "password"
             });
             expect(res.status).toBe(200);
+            console.log("JWT : ", res.data.jwt);
             expect(res.data.jwt).toBeDefined();
         } catch (error) {
-            console.log(error)
+            // console.log(error)
         }
     })
 })
