@@ -1,25 +1,25 @@
-import {createClient} from "redis"
+import { createClient } from "redis"
 import type { StreamEntry, MessageType, RawRedisMessage } from "shared-types"
 
 const client = await createClient()
-.on("error", (err) => {
-    console.log("Redis Client Error", err)
-})
-.connect();
+    .on("error", (err) => {
+        console.log("Redis Client Error", err)
+    })
+    .connect();
 
-type websiteArgs = {url: string, id: string}
+type websiteArgs = { url: string, id: string }
 const STREAM_NAME = 'statusbus:web'
 
-export async function xAdd({url, id}: websiteArgs){
+export async function xAdd({ url, id }: websiteArgs) {
     await client.xAdd(
         STREAM_NAME, '*', {
-            url,
-            id
-        })
+        url,
+        id
+    })
 }
 
-export async function xAddBulk(websites : websiteArgs[]){
-    for(const website of websites){
+export async function xAddBulk(websites: websiteArgs[]) {
+    for (const website of websites) {
         await xAdd({
             url: website.url,
             id: website.id
@@ -27,15 +27,34 @@ export async function xAddBulk(websites : websiteArgs[]){
     }
 }
 
+// Add this new function
+export async function xGroupCreate(
+    consumerGroup: string,
+    startId: string = "0"
+): Promise<void> {
+    try {
+        await client.xGroupCreate(STREAM_NAME, consumerGroup, startId, {
+            MKSTREAM: true
+        });
+        console.log(`Consumer group '${consumerGroup}' created successfully`);
+    } catch (error: any) {
+        if (error.message.includes('BUSYGROUP')) {
+            console.log(`Consumer group '${consumerGroup}' already exists`);
+        } else {
+            throw error;
+        }
+    }
+}
+
 export async function xReadGroup(
-                        consumerGroup: string, consumerId: string
-                        ): Promise<StreamEntry<MessageType>[]>{
+    consumerGroup: string, consumerId: string
+): Promise<StreamEntry<MessageType>[]> {
     const response = await client.xReadGroup(consumerGroup, consumerId, {
         key: STREAM_NAME,
         id: '>'
     }, {
         'COUNT': 5
-    } );
+    });
 
 
     // 1. Guard against null or non-array responses.
@@ -73,13 +92,13 @@ export async function xReadGroup(
     return typedMessages;
 }
 
-export async function xAck(consumerGroup: string, eventId:string){
+export async function xAck(consumerGroup: string, eventId: string) {
     const response = await client.xAck(STREAM_NAME, consumerGroup, eventId)
     console.log(response)
 }
 
-export async function xAckBulk(consumerGroup: string, eventIdArray: string[]){
-    eventIdArray.map( async (eventId) => {
+export async function xAckBulk(consumerGroup: string, eventIdArray: string[]) {
+    eventIdArray.map(async (eventId) => {
         await xAck(consumerGroup, eventId)
     })
 }

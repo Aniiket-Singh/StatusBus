@@ -32,7 +32,7 @@ describe("Signup endpoints", () => {
             expect(res.status).toBe(200);
             expect(res.data.id).toBeDefined();
         } catch (error) {
-            // console.log(error)
+            console.log(error)
         }
     })
 })
@@ -60,7 +60,7 @@ describe("signin endpoints", () => {
             console.log("JWT : ", res.data.jwt);
             expect(res.data.jwt).toBeDefined();
         } catch (error) {
-            // console.log(error)
+            console.log(error)
         }
     })
 })
