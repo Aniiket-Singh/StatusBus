@@ -112,7 +112,7 @@ app.get("/websites", authMiddleWare, async (req, res) =>{
     })
 })
 
-const PORT = Number(process.env.PORT) || 3000;
+const PORT = Number(process.env.PORT);
 const HOST = '127.0.0.1';
 
 app.listen(PORT, HOST, () => {
