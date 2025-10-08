@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import {
     Monitor,
     User,
+    X,
+    Plus,
     LogOut,
     Edit3,
     Trash2,
@@ -12,9 +14,11 @@ import {
     Activity
 } from 'lucide-react';
 
+import axios from 'axios';
+import { BACKEND_URL } from '../lib/utils'; 
+
 interface Website {
     id: string;
-    name: string;
     url: string;
     status: 'Up' | 'Down' | 'Unknown';
     responseTime: number;
@@ -26,7 +30,11 @@ interface DashboardProps {
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
-    const [websites] = useState<Website[]>([]);
+    const [ websites, setWebsites] = useState<Website[]>([]);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [websiteUrl, setWebsiteUrl] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
 
     const upSites = websites.filter(site => site.status === 'Up').length;
     const downSites = websites.filter(site => site.status === 'Down').length;
@@ -43,6 +51,47 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
     const handleGoTo = (url: string) => {
         window.open(url, '_blank');
     };
+
+    const handleAddWebsite = async () => {
+        if (!websiteUrl.trim()) 
+            return;
+
+        setIsSubmitting(true);
+        try {
+        const response = await axios.post(`${BACKEND_URL}/website`, {
+            url: websiteUrl.trim()
+        },
+        {
+            headers: { Authorization: localStorage.getItem("token") } // Or sessionStorage, depending on your setup
+        });
+            
+            // Add the new website to the local state
+            const newWebsite: Website = {
+                id: response.data.id,
+                url: websiteUrl.trim(),
+                status: 'Unknown',
+                responseTime: 0,
+                lastChecked: 'N/A'
+            };
+            
+            setWebsites(prev => [...prev, newWebsite]);
+            
+            // Reset and close modal
+            setWebsiteUrl('');
+            setIsModalOpen(false);
+        } catch (error) {
+            console.error('Error adding website:', error);
+            // You might want to show an error toast here
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setWebsiteUrl('');
+    };
+
 
     return (
         <div className="min-h-screen bg-slate-900">
@@ -118,7 +167,9 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
                     <div className="px-6 py-4 border-b border-slate-700">
                         <div className="flex items-center justify-between">
                             <h2 className="text-xl font-semibold text-white">Monitored Websites</h2>
-                            <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium">
+                            <button
+                             onClick={() => setIsModalOpen(true)} 
+                             className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium">
                                 Add Website
                             </button>
                         </div>
@@ -150,7 +201,6 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
                                     <tr key={website.id} className="hover:bg-slate-700/30 transition-colors">
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <div>
-                                                <div className="text-sm font-medium text-white">{website.name}</div>
                                                 <div className="text-sm text-slate-400">{website.url}</div>
                                             </div>
                                         </td>
@@ -204,7 +254,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
                     </div>
                 </div>
 
-                {/* Empty State (if no websites) */}
+                {/* Empty State (if no websites) */}    
                 {websites.length === 0 && (
                     <div className="bg-slate-800 rounded-xl border border-slate-700 p-12 text-center">
                         <Monitor className="h-16 w-16 text-slate-600 mx-auto mb-4" />
@@ -212,12 +262,64 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
                         <p className="text-slate-400 mb-6">
                             Add your first website to start monitoring its uptime and performance.
                         </p>
-                        <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors font-medium">
+                        <button 
+                         onClick = {() => setIsModalOpen(true)} 
+                         className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors font-medium">
                             Add Your First Website
-                        </button>
+                        </button>   
                     </div>
                 )}
             </main>
+
+            {/* Add Website Modal */}
+            {isModalOpen && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div className="bg-slate-800 rounded-xl border border-slate-700 p-6 w-full max-w-md mx-4">
+                <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-xl font-semibold text-white">Add Website</h3>
+                    <button
+                    onClick={handleCloseModal}
+                    className="text-slate-400 hover:text-white transition-colors"
+                    >
+                    <X className="h-5 w-5" />
+                    </button>
+                </div>
+                
+                <div className="space-y-4">
+                    <div>
+                    <label htmlFor="websiteUrl" className="block text-sm font-medium text-slate-300 mb-2">
+                        Website URL
+                    </label>
+                    <input
+                        id="websiteUrl"
+                        type="url"
+                        value={websiteUrl}
+                        onChange={(e) => setWebsiteUrl(e.target.value)}
+                        placeholder="https://example.com"
+                        className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    </div>
+                    
+                    <div className="flex space-x-3">
+                    <button
+                        onClick={handleCloseModal}
+                        className="flex-1 px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        onClick={handleAddWebsite}
+                        disabled={!websiteUrl.trim() || isSubmitting}
+                        className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 disabled:opacity-50 text-white rounded-lg transition-colors"
+                    >
+                        {isSubmitting ? 'Adding...' : 'Add Website'}
+                    </button>
+                    </div>
+                </div>
+                </div>
+            </div>
+            )}
+
         </div>
     );
 };
