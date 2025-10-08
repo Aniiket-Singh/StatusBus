@@ -206,11 +206,24 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <div className="flex items-center">
-                                                <div className={`w-3 h-3 rounded-full mr-2 ${website.status === 'Up' ? 'bg-green-400' : 'bg-red-400'
-                                                    } ${website.status === 'Down' ? 'animate-pulse' : ''}`}></div>
-                                                <span className={`text-sm font-medium ${website.status === 'Up' ? 'text-green-400' : 'text-red-400'
-                                                    }`}>
-                                                    {website.status === 'Up' ? 'Up' : 'Down'}
+                                                <div className={`w-3 h-3 rounded-full mr-2 ${
+                                                    website.status === "Up"
+                                                    ? "bg-green-400"
+                                                    : website.status === "Down"
+                                                    ? "bg-red-400 animate-pulse"
+                                                    : "bg-yellow-400 animate-pulse"
+                                                }`}
+                                                ></div>
+                                                <span
+                                                className={`text-sm font-medium ${
+                                                    website.status === "Up"
+                                                    ? "text-green-400"
+                                                    : website.status === "Down"
+                                                    ? "text-red-400"
+                                                    : "text-yellow-400"
+                                                }`}
+                                                >
+                                                {website.status}
                                                 </span>
                                             </div>
                                         </td>
