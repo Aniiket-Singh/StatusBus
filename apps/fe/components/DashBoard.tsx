@@ -1,5 +1,5 @@
 "use client"
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Monitor,
     User,
@@ -29,12 +29,34 @@ interface DashboardProps {
     onLogout: () => void;
 }
 
+
+
 const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
     const [ websites, setWebsites] = useState<Website[]>([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [websiteUrl, setWebsiteUrl] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    const fetchWebsites = async () => {
+        try {
+            const response = await axios.get(
+            BACKEND_URL + "/websites",
+            {
+                headers: {
+                Authorization: localStorage.getItem("token"),
+                },
+            }
+            );
+            setWebsites(response.data.websites);
+        } catch (error) {
+            console.error("Error fetching websites:", error);
+            // You may show an error toast or message to user
+        }
+    };
+
+    useEffect(() => {
+        fetchWebsites();
+    }, []);
 
     const upSites = websites.filter(site => site.status === 'Up').length;
     const downSites = websites.filter(site => site.status === 'Down').length;
@@ -58,12 +80,12 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
 
         setIsSubmitting(true);
         try {
-        const response = await axios.post(`${BACKEND_URL}/website`, {
-            url: websiteUrl.trim()
-        },
-        {
-            headers: { Authorization: localStorage.getItem("token") } // Or sessionStorage, depending on your setup
-        });
+            const response = await axios.post(`${BACKEND_URL}/website`, {
+                url: websiteUrl.trim()
+            },
+            {
+                headers: { Authorization: localStorage.getItem("token") } // Or sessionStorage, depending on your setup
+            });
             
             // Add the new website to the local state
             const newWebsite: Website = {
@@ -77,11 +99,12 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
             setWebsites(prev => [...prev, newWebsite]);
             
             // Reset and close modal
+            await fetchWebsites();
             setWebsiteUrl('');
             setIsModalOpen(false);
         } catch (error) {
             console.error('Error adding website:', error);
-            // You might want to show an error toast here
+            // Need to add error
         } finally {
             setIsSubmitting(false);
         }

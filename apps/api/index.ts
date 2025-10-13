@@ -102,14 +102,27 @@ app.get("/status/:websiteId", authMiddleWare, async (req, res) => {
 
 app.get("/websites", authMiddleWare, async (req, res) =>{
     const websites = await prismaClient.website.findMany({
-        where:{
-            user_id: req.user_id
-        }
-    })
+    where: { user_id: req.user_id },
+    include: {
+        ticks: {
+        orderBy: { createdAt: 'desc' },
+        take: 1, // Get the latest tick
+        },
+    },
+    });
 
-    res.json({
-        websites
-    })
+    // Format the result objects for the frontend
+    const formatted = websites.map(site => {
+    const latestTick = site.ticks[0];
+    return {
+        id: site.id,
+        url: site.url,
+        status: latestTick?.status ?? "Unknown",
+        responseTime: latestTick?.rt_ms ?? 0,
+        lastChecked: latestTick?.createdAt ?? "NA",
+    };
+    });
+    res.json({ websites: formatted });
 })
 
 const PORT = Number(process.env.PORT);
