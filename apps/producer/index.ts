@@ -1,6 +1,9 @@
 import {xAddBulk} from "redisq/client"
 import {prismaClient} from "store/client"
 
+type intervalObject = NodeJS.Timeout | null
+let intervalId : intervalObject = null 
+
 async function main (){
     try {
         let websites= await prismaClient.website.findMany({
@@ -33,8 +36,24 @@ async function main (){
 
 }
 
+process.on('SIGINT', async () => {
+    console.log('SIGINT signal received')
+    if(intervalId){
+        clearInterval (intervalId)
+    }
+    process.exit(0)
+})
+
+process.on('SIGTERM', async () => {
+    console.log('SIGNTERM signal received')
+    if(intervalId){
+        clearInterval (intervalId)
+    }
+    process.exit(0)
+})
+
 main()
 
-setInterval(() => {
+intervalId = setInterval(() => {
     main()
 }, 3*60*1000);
