@@ -2,58 +2,70 @@ import {xAddBulk} from "redisq/client"
 import {prismaClient} from "store/client"
 
 type intervalObject = NodeJS.Timeout | null
-let intervalId : intervalObject = null 
 
-async function main (){
-    try {
-        let websites= await prismaClient.website.findMany({
-            select:{
-                url: true,
-                id: true,
-                user_id: true
-            }
-        });
+class WebsiteListProducer {
+    private intervalId : intervalObject = null 
+    private MONITORING_INTERVAL = 3*60*1000
 
-        if (websites.length === 0) {
-            console.log('No websites to monitor')
-            return
-        }
-
-        console.log(`Producing monitoring jobs for ${websites.length} websites`)
-
-        await xAddBulk(websites.map(website => ({
-            url: website.url,
-            id: website.id,
-            user_id: website.user_id,
-            timestamp: Date.now().toString()
-        })))
-        .then( ()=> {
-            console.log(`${websites.length} jobs queued`)
-        })
-    } catch (error) {
-        console.error('Error producing monitoring jobs:', error)
+    async start(){
+        await this.jobMonitor()
+        this.intervalId = setInterval(()=> {
+            this.jobMonitor()
+        }, this.MONITORING_INTERVAL )
     }
 
+    async stop(){
+        console.log("Monitor Stopping . . .")
+        if(this.intervalId){
+            clearInterval(this.intervalId)
+            this.intervalId = null
+        }
+    }
+
+    private async jobMonitor(){
+        try {
+            let websites= await prismaClient.website.findMany({
+                select:{
+                    url: true,
+                    id: true,
+                    user_id: true
+                }
+            });
+
+            if (websites.length === 0) {
+                console.log('No websites to monitor')
+                return
+            }
+
+            console.log(`Producing monitoring jobs for ${websites.length} websites`)
+
+            await xAddBulk(websites.map(website => ({
+                url: website.url,
+                id: website.id,
+                user_id: website.user_id,
+                timestamp: Date.now().toString()
+            })))
+            .then( ()=> {
+                console.log(`${websites.length} jobs queued`)
+            })
+        } catch (error) {
+            console.error('Error producing monitoring jobs:', error)
+        }
+    }
 }
+
+const producer = new WebsiteListProducer()
 
 process.on('SIGINT', async () => {
     console.log('SIGINT signal received')
-    if(intervalId){
-        clearInterval (intervalId)
-    }
+    await producer.stop()
     process.exit(0)
 })
 
 process.on('SIGTERM', async () => {
     console.log('SIGNTERM signal received')
-    if(intervalId){
-        clearInterval (intervalId)
-    }
+    await producer.stop()
     process.exit(0)
 })
 
-main()
-
-intervalId = setInterval(() => {
-    main()
-}, 3*60*1000);
+producer.start()
