@@ -14,7 +14,15 @@ if (!CONSUMER_ID) {
     throw new Error("Consumer not provided");
 }
 
+let isRunning = true
+
 async function initializeConsumerGroup() {
+    try {
+        await xGroupCreate(REGION_ID, "0")
+        console.log(`Consumer group ${REGION_ID} ready`)
+    } catch (error) {
+        console.log(`Consumer group ${REGION_ID} already exists or error:`, error)
+    }
     await xGroupCreate(REGION_ID, "0");
 }
 
@@ -22,17 +30,24 @@ async function main() {
 
     await initializeConsumerGroup();
 
-    while(1){
-        const responses = await xReadGroup(REGION_ID, CONSUMER_ID)
+    while(isRunning){
+        try {
+            const responses = await xReadGroup(REGION_ID, CONSUMER_ID)
 
-        if(responses.length > 0){
-            const promisesArray = responses.map(async ({ id, message }) => await fetchWebsite(id, message.url, message.id))        
-            await Promise.all(promisesArray)
-        } else {
-            // if no jobs yet pushed -> responses.length == 0 -> the superloop takes a lot of time -> 1 sec timeout converts this loop into a 1sec interval polling loop to avoid overloeding system
+            if(responses.length > 0){
+                const promisesArray = responses.map(async ({ id, message }) => await fetchWebsite(id, message.url, message.id))        
+                await Promise.all(promisesArray)
+            } else {
+                // if no jobs yet pushed -> responses.length == 0 -> the superloop takes a lot of time -> 1 sec timeout converts this loop into a 1sec interval polling loop to avoid overloeding system
+                await new Promise(resolve => setTimeout(resolve, 1000))
+            }
+        } catch (error) {
+            console.log("Loop Error")
             await new Promise(resolve => setTimeout(resolve, 1000))
-        }
+        } 
+
     }
+    console.log('Consumer Stopped')
 }
 
 async function fetchWebsite(id: string, messageUrl: string, websiteId: string) {
@@ -78,5 +93,15 @@ async function fetchWebsite(id: string, messageUrl: string, websiteId: string) {
             }
         })
 }
+
+process.on('SIGINT', async () => {
+    console.log('Received SIGINT, shutting down gracefully...')
+    isRunning = false
+})
+
+process.on('SIGTERM', async () => {
+    console.log('Received SIGTERM, shutting down gracefully...')
+    isRunning = false
+})
 
 main()
