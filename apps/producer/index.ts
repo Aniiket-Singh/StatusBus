@@ -4,18 +4,28 @@ import {prismaClient} from "store/client"
 type intervalObject = NodeJS.Timeout | null
 
 class WebsiteListProducer {
+    private isRunning = false
     private intervalId : intervalObject = null 
     private MONITORING_INTERVAL = 3*60*1000
 
     async start(){
+        if (this.isRunning){
+            console.log("Producer from previous queue is already running")
+            return
+        }
+
+        this.isRunning = true
+
         await this.jobMonitor()
+        
         this.intervalId = setInterval(()=> {
             this.jobMonitor()
         }, this.MONITORING_INTERVAL )
     }
 
     async stop(){
-        console.log("Monitor Stopping . . .")
+        this.isRunning = false
+        console.log("Stopping the monitor . . .")
         if(this.intervalId){
             clearInterval(this.intervalId)
             this.intervalId = null
