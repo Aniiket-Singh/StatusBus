@@ -15,7 +15,7 @@ if (!CONSUMER_ID) {
 }
 
 class WebsiteListConsumer{
-    private isRunning = true
+    private isRunning = false
 
     async start() {
         if(this.isRunning){
