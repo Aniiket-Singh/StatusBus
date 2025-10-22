@@ -2,7 +2,7 @@
 import Dashboard from "@/components/DashBoard";
 import { useRouter } from "next/navigation";
 
-export default function() {
+export default function DashboardPage() {
     const router = useRouter();
     return <div>
         <Dashboard onLogout={() => {

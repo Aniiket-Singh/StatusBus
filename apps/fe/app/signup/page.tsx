@@ -18,7 +18,7 @@ const SignUp: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        let response = await axios.post(`${BACKEND_URL}/user/signup`,{
+        const response = await axios.post(`${BACKEND_URL}/user/signup`,{
             username: formData.username,
             password: formData.password
         })

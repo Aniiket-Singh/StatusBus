@@ -1,6 +1,6 @@
 "use client"
 import React from 'react';
-import { ArrowRight, Play, CheckCircle } from 'lucide-react';
+import { ArrowRight, CheckCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 

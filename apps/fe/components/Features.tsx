@@ -3,11 +3,8 @@ import {
     Globe,
     Bell,
     BarChart3,
-    Shield,
     Clock,
-    Zap,
-    Users,
-    Smartphone
+    Zap
 } from 'lucide-react';
 
 const features = [
@@ -48,7 +45,7 @@ export const Features: React.FC = () => {
                     </h2>
                     <p className="text-xl text-slate-400 max-w-3xl mx-auto">
                         Comprehensive monitoring tools designed for developers, DevOps teams, and businesses
-                        who can't afford downtime.
+                        who can&apos;t afford downtime.
                     </p>
                 </div>
 

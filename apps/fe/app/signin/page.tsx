@@ -15,7 +15,7 @@ const SignIn: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        let response = await axios.post(`${BACKEND_URL}/user/signin`, {
+        const response = await axios.post(`${BACKEND_URL}/user/signin`, {
             username: formData.username,
             password: formData.password
         })
@@ -26,7 +26,7 @@ const SignIn: React.FC = () => {
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value, type, checked } = e.target;
+        const { name, value } = e.target;
         setFormData(prev => ({
             ...prev,
             [name]: value
@@ -138,7 +138,7 @@ const SignIn: React.FC = () => {
                     </div>
 
                     <div className="text-center">
-                        <span className="text-slate-400">Don't have an account? </span>
+                        <span className="text-slate-400">Don&apos;t have an account? </span>
                         <button
                             type="button"
                             onClick={() => {router.push('/signup')}}

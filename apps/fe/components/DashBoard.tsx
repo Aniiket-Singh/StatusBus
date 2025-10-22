@@ -4,7 +4,6 @@ import {
     Monitor,
     User,
     X,
-    Plus,
     LogOut,
     Edit3,
     Trash2,
