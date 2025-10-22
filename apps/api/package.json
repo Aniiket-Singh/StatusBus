@@ -9,6 +9,7 @@
     "tsx": "^4.20.4"
   },
   "scripts": {
+    "build": "bun build ./index.ts --outdir ./dist --target=node",
     "start": "tsx index.ts"
   },
   "peerDependencies": {
