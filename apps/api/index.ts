@@ -9,7 +9,6 @@ const app = express();
 app.use(express.json());
 app.use(cors())
 
-
 app.post("/user/signup", async (req, res) => {
     const user_data = AuthInput.safeParse(req.body);
     if (!user_data.success){
@@ -123,7 +122,11 @@ app.get("/websites", authMiddleWare, async (req, res) =>{
     };
     });
     res.json({ websites: formatted });
-})
+});
+
+app.get("/health", (req, res) => {
+    res.status(200).send('ok')
+});
 
 const PORT = Number(process.env.PORT);
 const HOST = '127.0.0.1';
