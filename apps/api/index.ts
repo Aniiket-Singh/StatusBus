@@ -51,7 +51,7 @@ app.post("/user/signin", async (req, res) => {
             jwt: token
         })
     } catch (error) {
-        res.status(403).send("");
+        res.status(403).send("Couldnt retrieve user data from database");
         return;
     }
 })
@@ -129,7 +129,7 @@ app.get("/health", (req, res) => {
 });
 
 const PORT = Number(process.env.PORT);
-const HOST = '127.0.0.1';
+const HOST = process.env.HOST || '127.0.0.1';
 
 app.listen(PORT, HOST, () => {
     console.log(`Server listening on http://${HOST}:${PORT}`);

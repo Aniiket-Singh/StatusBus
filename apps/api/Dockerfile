@@ -45,7 +45,7 @@ COPY --from=builder /usr/src/app/apps/api/dist ./dist
 COPY --from=builder /usr/src/app/generated/client ./generated/client
 COPY --from=builder /usr/src/app/packages/store/prisma/schema.prisma ./prisma/
 
-EXPOSE 3000
+EXPOSE 3001
 USER bun
 CMD ["bun", "dist/index.js"]
 
