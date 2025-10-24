@@ -13,7 +13,9 @@ coverage
 .vscode
 .idea
 dist
+**/dist
 build
+**/build
 .turbo
 repomix*
 gcp-config.dev
