@@ -30,12 +30,24 @@ RUN bun run build --filter fe
 
 # ----------------------------------------------------
 
-FROM nginx:1.25-alpine AS runner
+# FROM nginx:1.25-alpine AS runner
 
-COPY --from=builder /app/apps/fe/.next /usr/share/nginx/html
+# COPY --from=builder /app/apps/fe/.next /usr/share/nginx/html
 
-COPY /apps/fe/nginx.conf /etc/nginx/conf.d/default.conf
+# COPY /apps/fe/nginx.conf /etc/nginx/conf.d/default.conf
 
-EXPOSE 80
+# EXPOSE 80
 
-CMD ["nginx", "-g", "daemon off;"]
+# CMD ["nginx", "-g", "daemon off;"]
+
+FROM oven/bun:1-slim AS runner
+
+WORKDIR /app
+
+ENV NODE_ENV=production
+COPY --from=builder /app/apps/fe ./apps/fe
+COPY --from=builder /app/node_modules ./node_modules 
+
+WORKDIR /app/apps/fe
+CMD ["bun", "run", "start"]
+EXPOSE 3000
