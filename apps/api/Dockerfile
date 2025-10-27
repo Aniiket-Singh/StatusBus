@@ -33,6 +33,9 @@ WORKDIR /app/apps/api
 
 EXPOSE 3001
 
+ENV HOST=0.0.0.0
+ENV PORT=3001
+
 CMD [ "bun", "dist/index.js"]
 
 
