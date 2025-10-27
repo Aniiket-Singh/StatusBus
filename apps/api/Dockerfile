@@ -1,53 +1,92 @@
+FROM oven/bun:1-slim AS builder
 
-FROM node:20-slim AS base
-WORKDIR /usr/src/app
-RUN npm install -g bun turbo
+WORKDIR /app 
+
+COPY ./apps/api ./apps/api
+COPY ./packages/store ./packages/store
+
+COPY package.json bun.lock ./
+
+COPY apps/consumer/package.json ./apps/consumer/
+COPY apps/fe/package.json ./apps/fe/
+COPY apps/producer/package.json ./apps/producer/
+COPY apps/tests/package.json ./apps/tests/
+
+COPY packages/eslint-config/package.json ./packages/eslint-config/
+COPY packages/redisq/package.json ./packages/redisq/
+COPY packages/shared-types/package.json ./packages/shared-types/
+COPY packages/typescript-config/package.json ./packages/typescript-config/
+
+# needed for prisma
 RUN apt-get update -y && apt-get install -y openssl
 
-FROM base AS pruner
-COPY . .
+RUN bunx prisma generate --schema=packages/store/prisma/schema.prisma
 
-RUN turbo prune api --docker
+RUN bun install --frozen-lockfile
 
-RUN rm -rf /usr/src/app/out/full/**/node_modules
+COPY turbo.json .
+RUN bun run build --filter api
 
-FROM base AS builder
+FROM builder AS runner
 
-# Copy the pruned files from the pruner stage.
-COPY --from=pruner /usr/src/app/out/json/ ./
-
-COPY --from=pruner /usr/src/app/out/bun.lock ./bun.lock
-
-RUN bun install 
-
-COPY --from=pruner /usr/src/app/out/full/ ./
-
-RUN cd packages/store && bunx prisma generate
-
-RUN bun build ./apps/api/index.ts --outdir ./apps/api/dist --target=node
-
-FROM oven/bun:1.0-slim
-
-WORKDIR /usr/src/app
-
-# Copy only the necessary pruned manifests from the builder.
-COPY --from=builder /usr/src/app/package.json /usr/src/app/bun.lock ./
-COPY --from=builder /usr/src/app/apps/api/package.json ./apps/api/
-COPY --from=builder /usr/src/app/packages/store/package.json ./packages/store/
-
-# This will now succeed because the lockfile perfectly matches the pruned manifests.
-RUN bun install
-
-# Copy the compiled application code.
-COPY --from=builder /usr/src/app/apps/api/dist ./dist
-
-# Copy the generated Prisma client and schema.
-COPY --from=builder /usr/src/app/generated/client ./generated/client
-COPY --from=builder /usr/src/app/packages/store/prisma/schema.prisma ./prisma/
+WORKDIR /app/apps/api
 
 EXPOSE 3001
-USER bun
-CMD ["bun", "dist/index.js"]
+
+CMD [ "bun", "dist/index.js"]
+
+
+# FROM node:20-slim AS base
+# WORKDIR /usr/src/app
+# RUN npm install -g bun turbo
+# RUN apt-get update -y && apt-get install -y openssl
+
+# FROM base AS pruner
+# COPY . .
+
+# RUN turbo prune api --docker
+
+# RUN rm -rf /usr/src/app/out/full/**/node_modules
+
+# FROM base AS builder
+
+# # Copy the pruned files from the pruner stage.
+# COPY --from=pruner /usr/src/app/out/json/ ./
+
+# COPY --from=pruner /usr/src/app/out/bun.lock ./bun.lock
+
+# RUN bun install 
+
+# COPY --from=pruner /usr/src/app/out/full/ ./
+
+# RUN cd packages/store && bunx prisma generate
+
+# RUN bun build ./apps/api/index.ts --outdir ./apps/api/dist --target=node
+
+# FROM oven/bun:1.0-slim
+
+# WORKDIR /usr/src/app
+
+# # Copy only the necessary pruned manifests from the builder.
+# COPY --from=builder /usr/src/app/package.json /usr/src/app/bun.lock ./
+# COPY --from=builder /usr/src/app/apps/api/package.json ./apps/api/
+# COPY --from=builder /usr/src/app/packages/store/package.json ./packages/store/
+
+# # This will now succeed because the lockfile perfectly matches the pruned manifests.
+# RUN bun install
+
+# # Copy the compiled application code.
+# COPY --from=builder /usr/src/app/apps/api/dist ./dist
+
+# # Copy the generated Prisma client and schema.
+# COPY --from=builder /usr/src/app/generated/client ./generated/client
+# COPY --from=builder /usr/src/app/packages/store/prisma/schema.prisma ./prisma/
+
+# EXPOSE 3001
+# USER bun
+# CMD ["bun", "dist/index.js"]
+
+# ------------------------------------------------------------------------
 
 # FROM oven/bun:1-alpine AS base
 
