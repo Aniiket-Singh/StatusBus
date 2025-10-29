@@ -1,4 +1,4 @@
-version: '3.8'
+
 services:
   postgres:
     image: postgres:15
@@ -17,6 +17,66 @@ services:
       - "6379:6379"
     volumes:
       - redis_data:/data
+
+  prisma-migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile.migrate
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/statusbus
+    depends_on:
+      - postgres
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/statusbus
+      - JWT_SECRET=${JWT_SECRET}
+      - PORT=3001
+      - HOST=0.0.0.0
+    depends_on:
+      - prisma-migrate
+    restart: unless-stopped
+
+  fe:
+    build:
+      context: .
+      dockerfile: apps/fe/Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+    restart: unless-stopped
+
+  producer:
+    build:
+      context: .
+      dockerfile: apps/producer/Dockerfile
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/statusbus
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - prisma-migrate
+      - redis
+    restart: unless-stopped
+
+  consumer:
+    build:
+      context: .
+      dockerfile: apps/consumer/Dockerfile
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/statusbus
+      - REDIS_URL=redis://redis:6379
+      - REGION_ID=1
+      - CONSUMER_ID=india-consumer-1
+    depends_on:
+      - prisma-migrate
+      - redis
+    restart: unless-stopped
 
 volumes:
   postgres_data:

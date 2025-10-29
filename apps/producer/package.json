@@ -9,6 +9,9 @@
   "peerDependencies": {
     "typescript": "^5"
   },
+  "scripts": {
+    "build": "bun build ./index.ts --outdir ./dist"
+  },
   "dependencies": {
     "store": "*",
     "redisq": "*"
