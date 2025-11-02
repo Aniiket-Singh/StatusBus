@@ -43,3 +43,5 @@ yarn-error.log*
 
 #Cloud
 gcp-config.env
+artifact-reader-key.json
+cloudsql-key.json

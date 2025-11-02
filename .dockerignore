@@ -20,3 +20,5 @@ build
 repomix*
 gcp-config.dev
 **/node_modules
+artifact-reader-key.json
+cloudsql-key.json
