@@ -6,7 +6,7 @@ metadata:
   labels:
     app: fe
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: fe
@@ -24,8 +24,8 @@ spec:
           secretName: gcp-cloudsql-key
 
       containers:
-      - name: fe
-        image: asia-south2-docker.pkg.dev/quiet-spirit-475711-g3/statusbus-repo/fe:latest
+      - name: frontend
+        image: asia-south2-docker.pkg.dev/quiet-spirit-475711-g3/statusbus-repo/frontend:latest
         ports:
         - containerPort: 3000
         envFrom:
