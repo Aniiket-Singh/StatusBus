@@ -22,7 +22,7 @@ RUN apt-get update -y && apt-get install -y openssl
 
 RUN bunx prisma generate --schema=packages/store/prisma/schema.prisma
 
-RUN bun install --frozen-lockfile
+RUN bun install --frozen-lockfile --production
 
 COPY turbo.json .
 RUN bun run build --filter api
