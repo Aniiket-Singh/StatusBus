@@ -7,7 +7,15 @@ import cors from "cors";
 
 const app = express();
 app.use(express.json());
-app.use(cors())
+app.use(cors({
+  origin: [
+    "https://statusbus.byaniket.online",
+    "http://localhost:3000" // local development
+  ],
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}))
 
 app.post("/user/signup", async (req, res) => {
     const user_data = AuthInput.safeParse(req.body);

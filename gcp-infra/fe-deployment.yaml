@@ -32,14 +32,13 @@ spec:
         - secretRef:
             name: statusbus-postgres-credentials
         env:
-        # internal 'api-service' for SSR
-        - name: API_URL
-          value: "http://api-service:3001"
+          - name: NEXT_PUBLIC_BACKEND_URL
+            value: "https://api.statusbus.byaniket.online"
         resources:
           requests:
             memory: "128Mi"
             cpu: "100m"
           limits:
-            memory: "256Mi"
-            cpu: "300m"
+            memory: "512Mi"
+            cpu: "500m"
             

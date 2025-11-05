@@ -3,9 +3,22 @@ kind: Ingress
 metadata:
   name: statusbus-ingress
   annotations:
-    # This line tells the ngrok-operator to claim this Ingress
-    kubernetes.io/ingress.class: "ngrok"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "https://statusbus.byaniket.online"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, PUT, DELETE, OPTIONS"
+    nginx.ingress.kubernetes.io/cors-allow-headers: "Content-Type, Authorization"
+    nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
 spec:
+  ingressClassName: nginx
+  tls:  
+    - hosts:
+        - statusbus.byaniket.online
+        - api.statusbus.byaniket.online
+      secretName: statusbus-tls-cert
   rules:
   - host: "statusbus.byaniket.online"  
     http:

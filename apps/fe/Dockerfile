@@ -22,23 +22,16 @@ RUN bun install --frozen-lockfile
 
 # ----------------------------------------------------
 
-    FROM dependencies AS builder
+ARG NEXT_PUBLIC_BACKEND_URL=https://api.statusbus.byaniket.online
+ENV NEXT_PUBLIC_BACKEND_URL=${NEXT_PUBLIC_BACKEND_URL}
+
+FROM dependencies AS builder
 # COPY . .
 COPY turbo.json .
 COPY apps/fe ./apps/fe
 RUN bun run build --filter fe
 
 # ----------------------------------------------------
-
-# FROM nginx:1.25-alpine AS runner
-
-# COPY --from=builder /app/apps/fe/.next /usr/share/nginx/html
-
-# COPY /apps/fe/nginx.conf /etc/nginx/conf.d/default.conf
-
-# EXPOSE 80
-
-# CMD ["nginx", "-g", "daemon off;"]
 
 FROM oven/bun:1-slim AS runner
 
