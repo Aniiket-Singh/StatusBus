@@ -1,0 +1,22 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+jobs:
+  test-runner:
+    name: Test CI 
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: List files
+        run: |
+          echo "Hello from the CI pipeline!"
+          echo "The repository contains:"
+          ls -la
