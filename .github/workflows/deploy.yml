@@ -47,7 +47,7 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          docker build --platform=linux/amd64 \
+          docker buildx build --platform=linux/amd64 \
             -f apps/${{ env.SERVICE_NAME }}/Dockerfile \
             -t ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE_NAME }}:${{ github.sha }} \
             -t ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE_NAME }}:latest \
