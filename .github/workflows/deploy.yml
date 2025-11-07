@@ -55,8 +55,10 @@ jobs:
   buld-and-push-api:
     name: build and push api image
     runs-on: ubuntu-latest
-    needs: checkout-and-list
-
+    needs: [checkout-and-list, detect-change]
+           
+    if: needs.detect-change.outputs.api == 'true'
+    
     steps:
       - uses: actions/checkout@v4
 
