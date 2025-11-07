@@ -14,6 +14,31 @@ env:
   SERVICE_NAME: api
 
 jobs:
+  detect-change:
+    name: detect changes in codebase
+    runs-on: ubuntu-latest
+    outputs:
+      api: ${{ steps.changes.outputs.api }}
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2 # min 2 commits required for comparison
+
+      - name: check for api changes
+        id: changes # give ID to reference the output
+        run: |
+          echo "Checking for changes in api or packages..."
+          # 1. Compare the last commit (HEAD) with the one before it (HEAD^)
+          # 2. Grep searches that list of changed files for our paths
+          if git diff --name-only HEAD^ HEAD | grep -E '^apps/api/|^packages/' > /dev/null; then
+            # 3. If found, set the output variable 'api' to 'true'
+            echo "Changes detected."
+            echo "api=true" >> $GITHUB_OUTPUT
+          else
+            echo "No changes found."
+            echo "api=false" >> $GITHUB_OUTPUT
+          fi
   checkout-and-list:
     name: Checkout and list
     runs-on: ubuntu-latest
