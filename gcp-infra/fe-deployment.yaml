@@ -25,12 +25,10 @@ spec:
 
       containers:
       - name: frontend
-        image: asia-south2-docker.pkg.dev/quiet-spirit-475711-g3/statusbus-repo/frontend:latest
+        image: asia-south2-docker.pkg.dev/quiet-spirit-475711-g3/statusbus-repo/fe:latest
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 3000
-        envFrom:
-        - secretRef:
-            name: statusbus-postgres-credentials
         env:
           - name: NEXT_PUBLIC_BACKEND_URL
             value: "https://api.statusbus.byaniket.online"

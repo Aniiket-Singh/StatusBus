@@ -26,6 +26,7 @@ spec:
       containers:
       - name: consumer
         image: asia-south2-docker.pkg.dev/quiet-spirit-475711-g3/statusbus-repo/consumer:latest
+        imagePullPolicy: IfNotPresent
         envFrom:
         - secretRef:
             name: statusbus-postgres-credentials
@@ -34,6 +35,10 @@ spec:
         env:
         - name: DATABASE_URL
           value: "postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@127.0.0.1:5432/statusbus?schema=public"
+        - name: REGION_ID
+          value: "1"
+        - name: CONSUMER_ID
+          value: "india-consumer-1"
         resources:
           requests:
             memory: "256Mi"

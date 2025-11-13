@@ -25,9 +25,12 @@ spec:
       containers:
       - name: api
         image: asia-south2-docker.pkg.dev/quiet-spirit-475711-g3/statusbus-repo/api:latest
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 3001
         envFrom:
+        - secretRef:
+            name: statusbus-jwt-secret
         - secretRef:
             name: statusbus-postgres-credentials
         env:
@@ -49,7 +52,7 @@ spec:
           requests:
             memory: "256Mi"
             cpu: "200m"
-          limits:
+          limits: 
             memory: "512Mi"
             cpu: "500m"
       # gcp cloud-sql sidecar

@@ -26,6 +26,7 @@ spec:
       containers:
       - name: producer
         image: asia-south2-docker.pkg.dev/quiet-spirit-475711-g3/statusbus-repo/producer:latest
+        imagePullPolicy: IfNotPresent
         envFrom:
         - secretRef:
             name: statusbus-postgres-credentials
