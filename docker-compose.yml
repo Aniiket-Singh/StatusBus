@@ -22,6 +22,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.migrate
+    command: ["bunx", "prisma", "migrate", "deploy", "--schema=./packages/store/prisma/schema.prisma"]
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/statusbus
     depends_on:
@@ -39,7 +40,8 @@ services:
       - PORT=3001
       - HOST=0.0.0.0
     depends_on:
-      - prisma-migrate
+      prisma-migrate:
+        condition: service_completed_successfully
     restart: unless-stopped
 
   fe:
@@ -60,8 +62,10 @@ services:
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/statusbus
       - REDIS_URL=redis://redis:6379
     depends_on:
-      - prisma-migrate
-      - redis
+      prisma-migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_started
     restart: unless-stopped
 
   consumer:
@@ -74,8 +78,10 @@ services:
       - REGION_ID=1
       - CONSUMER_ID=india-consumer-1
     depends_on:
-      - prisma-migrate
-      - redis
+      prisma-migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_started
     restart: unless-stopped
 
 volumes:

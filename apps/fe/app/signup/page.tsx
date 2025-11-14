@@ -18,16 +18,27 @@ const SignUp: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        const response = await axios.post(`${BACKEND_URL}/user/signup`,{
-            username: formData.username,
-            password: formData.password
-        })
-
-        if(response.status == 200) {
-            console.log('Sign up successful:', formData);
-            router.push('/signin');
-        } else {
-            console.error('Sign up failed:', response.data);
+        try {
+            const response = await axios.post(`${BACKEND_URL}/user/signup`,{
+                    username: formData.username,
+                    password: formData.password
+                })
+    
+            if(response.status == 200) {
+                console.log('Sign up successful:', formData);
+                router.push('/signin');
+            } else {
+                console.error('Sign up failed:', response.data);
+            }
+            
+        } catch (error) {
+            console.error('An error occurred during sign up:', error);
+        
+            if (axios.isAxiosError(error) && error.response) {
+                console.error('Server responded with:', error.response.status, error.response.data);
+            } else {
+                console.error('A non-axios error occurred:', error);
+            }
         }
     };
 
