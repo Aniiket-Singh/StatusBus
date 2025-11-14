@@ -1,6 +1,6 @@
-import { PrismaClient } from '@prisma/client';
+import { prismaClient } from './index';
 
-const prisma = new PrismaClient();
+const prisma =  prismaClient;
 
 const regionsToCreate = [
     { id: '1', name: 'India' },

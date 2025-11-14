@@ -17,6 +17,7 @@ const SignUp: React.FC = () => {
     });
 
     const handleSubmit = async (e: React.FormEvent) => {
+        console.log('handleSubmit() called')
         e.preventDefault();
         try {
             const response = await axios.post(`${BACKEND_URL}/user/signup`,{

@@ -163,6 +163,10 @@ const config = {
         "fromEnvVar": null,
         "value": "darwin-arm64",
         "native": true
+      },
+      {
+        "fromEnvVar": null,
+        "value": "linux-arm64-openssl-1.1.x"
       }
     ],
     "previewFeatures": [],
@@ -171,7 +175,7 @@ const config = {
   },
   "relativeEnvPaths": {
     "rootEnvPath": null,
-    "schemaEnvPath": "../../packages/store/.env"
+    "schemaEnvPath": "../../.env"
   },
   "relativePath": "../../packages/store/prisma",
   "clientVersion": "6.12.0",
@@ -189,8 +193,8 @@ const config = {
       }
     }
   },
-  "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"../../../generated/client\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel User {\n  id       String    @id @default(uuid())\n  username String    @unique\n  password String\n  websites Website[]\n}\n\nmodel Website {\n  id        String        @id @default(uuid())\n  url       String\n  createdAt DateTime      @default(now())\n  ticks     WebsiteTick[]\n  user_id   String\n  user      User          @relation(fields: [user_id], references: [id])\n}\n\nmodel Region {\n  id    String        @id @default(uuid())\n  name  String\n  ticks WebsiteTick[]\n}\n\nmodel WebsiteTick {\n  id         String        @id @default(uuid())\n  rt_ms      Int\n  status     WebsiteStatus\n  region_id  String\n  website_id String\n  region     Region        @relation(fields: [region_id], references: [id])\n  website    Website       @relation(fields: [website_id], references: [id], onDelete: Cascade)\n  createdAt  DateTime      @default(now())\n}\n\nenum WebsiteStatus {\n  Up\n  Down\n  Unknown\n}\n",
-  "inlineSchemaHash": "1327003ad354f54af012b90d52230dd41f7900ead34070ecf17946349c319709",
+  "inlineSchema": "generator client {\n  provider      = \"prisma-client-js\"\n  output        = \"../../../generated/client\"\n  binaryTargets = [\"native\", \"linux-arm64-openssl-1.1.x\"]\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel User {\n  id       String    @id @default(uuid())\n  username String    @unique\n  password String\n  websites Website[]\n}\n\nmodel Website {\n  id        String        @id @default(uuid())\n  url       String\n  createdAt DateTime      @default(now())\n  ticks     WebsiteTick[]\n  user_id   String\n  user      User          @relation(fields: [user_id], references: [id])\n}\n\nmodel Region {\n  id    String        @id @default(uuid())\n  name  String\n  ticks WebsiteTick[]\n}\n\nmodel WebsiteTick {\n  id         String        @id @default(uuid())\n  rt_ms      Int\n  status     WebsiteStatus\n  region_id  String\n  website_id String\n  region     Region        @relation(fields: [region_id], references: [id])\n  website    Website       @relation(fields: [website_id], references: [id], onDelete: Cascade)\n  createdAt  DateTime      @default(now())\n}\n\nenum WebsiteStatus {\n  Up\n  Down\n  Unknown\n}\n",
+  "inlineSchemaHash": "102033c5573b428039ca546b8ae5f260016c7dae34461f08973c9d7440f249d5",
   "copyEngine": true
 }
 
@@ -199,8 +203,8 @@ const fs = require('fs')
 config.dirname = __dirname
 if (!fs.existsSync(path.join(__dirname, 'schema.prisma'))) {
   const alternativePaths = [
-    "../../generated/client",
-    "../generated/client",
+    "generated/client",
+    "client",
   ]
   
   const alternativePath = alternativePaths.find((altPath) => {
@@ -230,7 +234,11 @@ Object.assign(exports, Prisma)
 
 // file annotations for bundling tools to include these files
 path.join(__dirname, "libquery_engine-darwin-arm64.dylib.node");
-path.join(process.cwd(), "../../generated/client/libquery_engine-darwin-arm64.dylib.node")
+path.join(process.cwd(), "generated/client/libquery_engine-darwin-arm64.dylib.node")
+
+// file annotations for bundling tools to include these files
+path.join(__dirname, "libquery_engine-linux-arm64-openssl-1.1.x.so.node");
+path.join(process.cwd(), "generated/client/libquery_engine-linux-arm64-openssl-1.1.x.so.node")
 // file annotations for bundling tools to include these files
 path.join(__dirname, "schema.prisma");
-path.join(process.cwd(), "../../generated/client/schema.prisma")
+path.join(process.cwd(), "generated/client/schema.prisma")

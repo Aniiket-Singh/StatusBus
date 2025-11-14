@@ -48,6 +48,8 @@ services:
     build:
       context: .
       dockerfile: apps/fe/Dockerfile
+      args:
+          - NEXT_PUBLIC_BACKEND_URL=http://127.0.0.1:3001
     ports:
       - "3000:3000"
     depends_on:
