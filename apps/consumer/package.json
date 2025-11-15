@@ -11,9 +11,8 @@
     "build": "bun build ./index.ts --outdir ./dist --target=node"
   },
   "dependencies": {
-    "axios": "^1.13.0",
-    "redisq": "*",
-    "store": "*"
+    "axios": "^1.13.2",
+    "redisq": "*"
   },
   "private": true,
   "type": "module"

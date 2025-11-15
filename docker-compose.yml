@@ -61,8 +61,8 @@ services:
       context: .
       dockerfile: apps/producer/Dockerfile
     environment:
-      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/statusbus
       - REDIS_URL=redis://redis:6379
+      - API_URL=http://127.0.0.1:3001
     depends_on:
       prisma-migrate:
         condition: service_completed_successfully
@@ -75,8 +75,8 @@ services:
       context: .
       dockerfile: apps/consumer/Dockerfile
     environment:
-      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/statusbus
       - REDIS_URL=redis://redis:6379
+      - API_URL=http://127.0.0.1:3001
       - REGION_ID=1
       - CONSUMER_ID=india-consumer-1
     depends_on:
