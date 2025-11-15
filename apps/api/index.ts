@@ -132,6 +132,41 @@ app.get("/websites", authMiddleWare, async (req, res) =>{
     res.json({ websites: formatted });
 });
 
+app.get("/monitoring/websites", async (req, res) => {
+  try {
+    const websites = await prismaClient.website.findMany({
+      select: {
+        id: true,
+        url: true,
+        user_id: true,
+      },
+    });
+    res.json({ websites }); // [{ id, url, user_id }]
+  } catch (error) {
+    res.status(500).json({ error: "Unable to fetch websites to monitor" });
+  }
+});
+
+app.post("/monitoring/tick", async (req, res) => {
+  const { website_id, region_id, rt_ms, status } = req.body;
+  if (!website_id || !region_id || typeof rt_ms !== "number" || !status) {
+    return res.status(400).json({ error: "Missing fields" });
+  }
+  try {
+    const tick = await prismaClient.websiteTick.create({
+      data: {
+        website_id,
+        region_id,
+        rt_ms,
+        status,
+      },
+    });
+    res.json({ tick });
+  } catch (error) {
+    res.status(500).json({ error: "Tick creation failed" });
+  }
+});
+
 app.get("/health", (req, res) => {
     res.status(200).send('ok')
 });

@@ -1,8 +1,9 @@
 import { xAck, xAckBulk, xReadGroup, xGroupCreate } from "redisq/client"
-import { prismaClient } from "store/client";
+// import { prismaClient } from "store/client";
 import axios from "axios"
 import type { MessageType, StreamEntry } from "shared-types"
 
+const API_URL = process.env.API_URL || "http://127.0.0.1:3001";
 const REGION_ID = process.env.REGION_ID!;
 const CONSUMER_ID = process.env.CONSUMER_ID!;
 
@@ -73,38 +74,35 @@ class WebsiteListConsumer{
     }
 
     private async fetchWebsite(id: string, messageUrl: string, websiteId: string) {
-        const website = await prismaClient.website.findUnique({
-            where: { id: websiteId },
-        });
+        // const website = await prismaClient.website.findUnique({
+        //     where: { id: websiteId },
+        // });
 
         // 2. If it doesn't exist, log it, acknowledge the message, and stop processing
-        if (!website) {
-            console.warn(`Website with ID ${websiteId} not found in database. Skipping tick creation.`);
-            await xAck(REGION_ID, id);
-            return;
-        }
-
         let startTime = Date.now()
+        
+        // if (!website) {
+        //     console.warn(`Website with ID ${websiteId} not found in database. Skipping tick creation.`);
+        //     await xAck(REGION_ID, id);
+        //     return;
+        // }
+
         await axios.get(messageUrl)
             .then(async () => {
-                await prismaClient.websiteTick.create({
-                    data: {
-                        rt_ms: Number(Date.now() - startTime),
-                        status: "Up",
-                        region_id: REGION_ID,
-                        website_id: websiteId
-                    }
-                })
+                await axios.post(`${API_URL}/monitoring/tick`, {
+                website_id: websiteId,
+                region_id: REGION_ID,
+                rt_ms: Date.now() - startTime,
+                status: "Up",
+                });
                 console.log('Event ID (success) : ', id)
             }).catch(async () => {
-                await prismaClient.websiteTick.create({
-                    data: {
-                        rt_ms: Number(Date.now() - startTime),
-                        status: "Down",
-                        region_id: REGION_ID,
-                        website_id: websiteId
-                    }
-                })
+                await axios.post(`${API_URL}/monitoring/tick`, {
+                website_id: websiteId,
+                region_id: REGION_ID,
+                rt_ms: Date.now() - startTime,
+                status: "Down",
+                });
                 console.log('Event ID (fail) : ', id)
             }).finally(async () => {
                 try {

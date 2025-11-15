@@ -1,7 +1,17 @@
 import {xAddBulk} from "redisq/client"
-import {prismaClient} from "store/client"
+import axios from "axios";
+// import {prismaClient} from "store/client"
 
 type intervalObject = NodeJS.Timeout | null
+
+type WebsiteToMonitor = {
+  id: string;
+  url: string;
+  user_id: string;
+}
+
+
+const API_URL = process.env.API_URL || "http://127.0.0.1:3001";
 
 class WebsiteListProducer {
     private isRunning = false
@@ -34,22 +44,25 @@ class WebsiteListProducer {
 
     private async jobMonitor(){
         try {
-            let websites= await prismaClient.website.findMany({
-                select:{
-                    url: true,
-                    id: true,
-                    user_id: true
-                }
-            });
+            // let websites= await prismaClient.website.findMany({
+            //     select:{
+            //         url: true,
+            //         id: true,
+            //         user_id: true
+            //     }
+            // });
 
-            if (websites.length === 0) {
+            const response = await axios.get(`${API_URL}/monitoring/websites`);
+            const websites = response.data.websites; // [{id, url, user_id}]
+
+            if (!websites || websites.length === 0) {
                 console.log('No websites to monitor')
-                return
+                return;
             }
 
             console.log(`Producing monitoring jobs for ${websites.length} websites`)
 
-            await xAddBulk(websites.map(website => ({
+            await xAddBulk(websites.map((website: WebsiteToMonitor) => ({
                 url: website.url,
                 id: website.id,
                 user_id: website.user_id,
