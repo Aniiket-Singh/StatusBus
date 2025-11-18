@@ -3,14 +3,19 @@ kind: Job
 metadata:
   name: db-migrate
 spec:
-  ttlSecondsAfterFinished: 600    # Keep pods for 10 minutes after job finishes
-  backoffLimit: 1                 # (Optional) Try once for faster feedback
+  ttlSecondsAfterFinished: 600
+  backoffLimit: 1
   template:
     spec:
       containers:
       - name: migrate
         image: 1ek8/statusbus-migrate:latest
-        command: ["bunx", "prisma", "migrate", "deploy", "--schema=./packages/store/prisma/schema.prisma"]
+        command:
+          - sh
+          - -c
+          - |
+            bunx prisma migrate deploy --schema=./packages/store/prisma/schema.prisma && \
+            bun run ./packages/store/seedRegion.ts
         env:
         - name: DATABASE_URL
           valueFrom:
