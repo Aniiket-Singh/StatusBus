@@ -1,0 +1,20 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: db-migrate
+spec:
+  ttlSecondsAfterFinished: 600    # Keep pods for 10 minutes after job finishes
+  backoffLimit: 1                 # (Optional) Try once for faster feedback
+  template:
+    spec:
+      containers:
+      - name: migrate
+        image: 1ek8/statusbus-migrate:latest
+        command: ["bunx", "prisma", "migrate", "deploy", "--schema=./packages/store/prisma/schema.prisma"]
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: statusbus-secrets
+              key: database-url
+      restartPolicy: OnFailure

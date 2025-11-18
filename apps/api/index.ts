@@ -163,6 +163,7 @@ app.post("/monitoring/tick", async (req, res) => {
     });
     res.json({ tick });
   } catch (error) {
+    console.error('Tick creation failed:', error);
     res.status(500).json({ error: "Tick creation failed" });
   }
 });

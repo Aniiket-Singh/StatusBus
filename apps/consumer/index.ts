@@ -60,11 +60,22 @@ class WebsiteListConsumer{
                     // if no jobs yet pushed -> responses.length == 0 ->  superloop becomes resource-intensive -> 1 sec timeout converts this loop into a 1sec interval polling function to avoid overloading system
                     await new Promise(resolve => setTimeout(resolve, 1000))
                 }
-            } catch (error) {
-                console.log("Loop Error")
-                await new Promise(resolve => setTimeout(resolve, 5000))
-            } 
-
+            }
+            // } catch (error) {
+            //     console.log("Loop Error")
+            //     if (error instanceof Error) {
+            //         console.error("Error Message:", error.message);
+            //         console.error("Stack:", error.stack);
+            //     }
+            //     await new Promise(resolve => setTimeout(resolve, 5000))
+            // } 
+            catch (error) {
+                try {
+                    console.error("Loop Error stringified:", JSON.stringify(error));
+                } catch {
+                    console.error("Loop Error Raw:", error);
+                }
+            }
         }
     }
 

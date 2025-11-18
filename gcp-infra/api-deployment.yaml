@@ -14,25 +14,12 @@ spec:
       labels:
         app: api
     spec:
-      imagePullSecrets:
-      - name: gcp-artifact-registry-key
-      
-      volumes:
-      - name: cloudsql-key-volume
-        secret:
-          secretName: gcp-cloudsql-key
-
       containers:
       - name: api
         image: asia-south2-docker.pkg.dev/quiet-spirit-475711-g3/statusbus-repo/api:latest
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 3001
-        envFrom:
-        - secretRef:
-            name: statusbus-jwt-secret
-        - secretRef:
-            name: statusbus-postgres-credentials
         env:
         - name: DATABASE_URL
           value: "postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@127.0.0.1:5432/statusbus?schema=public"

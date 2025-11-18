@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: producer-deployment
+  labels:
+    app: producer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: producer
+  template:
+    metadata:
+      labels:
+        app: producer
+    spec:
+      containers:
+      - name: producer
+        image: 1ek8/statusbus-producer:latest
+        imagePullPolicy: Always
+        env:
+        - name: REDIS_URL
+          valueFrom:
+            secretKeyRef:
+              name: statusbus-secrets
+              key: redis-url
+        - name: API_URL
+          value: "http://api-service:3001"
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "400m"
