@@ -3,7 +3,7 @@ kind: Job
 metadata:
   name: db-migrate
 spec:
-  ttlSecondsAfterFinished: 600
+  ttlSecondsAfterFinished: 60 # for debugging
   backoffLimit: 1
   template:
     spec:
@@ -15,7 +15,8 @@ spec:
           - -c
           - |
             bunx prisma migrate deploy --schema=./packages/store/prisma/schema.prisma && \
-            bun run ./packages/store/seedRegion.ts
+            bun run ./packages/store/seedRegion.ts ; sleep 600
+
         env:
         - name: DATABASE_URL
           valueFrom:

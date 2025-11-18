@@ -17,6 +17,7 @@ COPY packages/typescript-config/package.json ./packages/typescript-config/
 COPY ./packages/store/ ./packages/store/
 
 RUN apt-get update -y && apt-get install -y openssl
+RUN bunx prisma generate --schema=packages/store/prisma/schema.prisma
 RUN bun install --frozen-lockfile
 
 CMD ["bunx", "prisma", "migrate", "deploy"]
