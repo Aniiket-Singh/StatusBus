@@ -2,12 +2,13 @@ FROM oven/bun:1-slim AS builder
 
 WORKDIR /app 
 
-COPY ./apps/consumer ./apps/consumer
+COPY apps/consumer/ ./apps/consumer/
 COPY ./packages/redisq ./packages/redisq
 
 COPY package.json bun.lock ./
 
 COPY apps/producer/package.json ./apps/producer/
+COPY apps/api/package.json ./apps/api/
 COPY apps/fe/package.json ./apps/fe/
 COPY apps/tests/package.json ./apps/tests/
 

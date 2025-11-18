@@ -3,7 +3,7 @@ import { xAck, xAckBulk, xReadGroup, xGroupCreate } from "redisq/client"
 import axios from "axios"
 import type { MessageType, StreamEntry } from "shared-types"
 
-const API_URL = process.env.API_URL || "http://127.0.0.1:3001";
+const API_URL = process.env.API_URL || "http://api:3001";
 const REGION_ID = process.env.REGION_ID!;
 const CONSUMER_ID = process.env.CONSUMER_ID!;
 

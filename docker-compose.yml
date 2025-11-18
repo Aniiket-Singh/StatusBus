@@ -62,7 +62,7 @@ services:
       dockerfile: apps/producer/Dockerfile
     environment:
       - REDIS_URL=redis://redis:6379
-      - API_URL=http://127.0.0.1:3001
+      - API_URL=http://api:3001
     depends_on:
       prisma-migrate:
         condition: service_completed_successfully
@@ -76,7 +76,7 @@ services:
       dockerfile: apps/consumer/Dockerfile
     environment:
       - REDIS_URL=redis://redis:6379
-      - API_URL=http://127.0.0.1:3001
+      - API_URL=http://api:3001
       - REGION_ID=1
       - CONSUMER_ID=india-consumer-1
     depends_on:

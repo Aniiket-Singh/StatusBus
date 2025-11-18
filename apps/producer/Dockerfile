@@ -9,6 +9,7 @@ COPY package.json bun.lock ./
 
 COPY apps/consumer/package.json ./apps/consumer/
 COPY apps/fe/package.json ./apps/fe/
+COPY apps/api/package.json ./apps/api/
 COPY apps/tests/package.json ./apps/tests/
 
 COPY packages/eslint-config/package.json ./packages/eslint-config/

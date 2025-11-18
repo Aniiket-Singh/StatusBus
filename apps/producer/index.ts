@@ -10,18 +10,35 @@ type WebsiteToMonitor = {
   user_id: string;
 }
 
-
-const API_URL = process.env.API_URL || "http://127.0.0.1:3001";
+const API_URL = process.env.API_URL || "http://api:3001";
 
 class WebsiteListProducer {
     private isRunning = false
     private intervalId : intervalObject = null 
-    private MONITORING_INTERVAL = 3*60*1000
+    private MONITORING_INTERVAL = 1*60*1000
 
     async start(){
         if (this.isRunning){
             console.log("Producer from previous queue is already running")
             return
+        }
+
+        const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+        let connected = false;
+        for (let i = 0; i < 10; i++) {
+            try {
+                await axios.get(`${API_URL}/monitoring/websites`);
+                connected = true;
+                console.log("API is reachable, starting monitoring jobs...");
+                break;
+            } catch (e) {
+                console.log(`API not reachable, retrying in 2 seconds (attempt ${i + 1}/10)`);
+                await sleep(2000);
+            }
+        }
+        if (!connected) {
+            console.error("API is not reachable after retries; producer not starting.");
+            return;
         }
 
         this.isRunning = true
